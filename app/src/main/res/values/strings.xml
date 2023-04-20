@@ -1,0 +1,45 @@
+<resources>
+    <string name="app_name">Achievers</string>
+    <string name="splash_screen_image">Splash Screen Image</string>
+    <string name="achiever_s_home">Achiever\'s Home</string>
+    <string name="login">Login</string>
+    <string name="your_roll_number">Your Roll Number</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="logout">Logout</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <string name="homework">Homework</string>
+    <string name="tests">Tests</string>
+    <string name="schedule">Schedule</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="your_profile">Your Profile</string>
+    <string name="edit_profile_image">Edit Profile Image</string>
+    <string name="name_">Name:</string>
+    <string name="standard_">Standard:</string>
+    <string name="roll_number_">Roll Number:</string>
+    <string name="phone_">Phone:</string>
+    <string name="parent_s_phone_">Parent\'s Phone:</string>
+    <string name="school_">School:</string>
+    <string name="fees_">Fees:</string>
+    <string name="edit">Edit</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="phone">Phone</string>
+    <string name="parent_s_phone">Parent\'s Phone</string>
+    <string name="country_code">+91</string>
+    <string name="update_profile">Update Profile</string>
+    <string name="schools">School</string>
+    <string name="dob">Date of Birth (dd/mm/yyyy)</string>
+    <string name="dob_">Date of Birth:</string>
+    <string name="name">Name</string>
+    <string name="standard">Standard</string>
+    <string name="roll_number">Roll Number</string>
+    <string name="login_id">Login ID</string>
+    <string name="remove_profile_picture">Remove Profile Picture</string>
+    <string name="plus">+</string>
+    <string name="edit_image">Edit Image</string>
+    <string name="email_">Email:</string>
+    <string name="add_profile_picture">Add Profile Picture</string>
+</resources>

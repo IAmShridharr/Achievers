@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "274266583446",
+    "project_id": "achievers-home-376d0",
+    "storage_bucket": "achievers-home-376d0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:274266583446:android:3e48e55e7e8e3b54d2adb7",
+        "android_client_info": {
+          "package_name": "com.infiniterealm.achievers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "274266583446-8b8089duu90s1t8g77b9ktgmv8ignv23.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlXNNwbIcHud2moH8GAb2TwKa1fzszjqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "274266583446-8b8089duu90s1t8g77b9ktgmv8ignv23.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
