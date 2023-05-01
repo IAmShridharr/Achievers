@@ -1,6 +1,5 @@
 package com.infiniterealm.achievers.explorer.mainFragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -9,10 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.infiniterealm.achievers.LoginActivity;
 import com.infiniterealm.achievers.R;
 
 /**
@@ -23,9 +18,6 @@ import com.infiniterealm.achievers.R;
 public class ExplorerExploreFragment extends Fragment {
 
     View rootView;
-    FirebaseAuth mAuth;
-    FirebaseUser user;
-    DatabaseReference mDbRef;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -72,14 +64,6 @@ public class ExplorerExploreFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_explorer_explore, container, false);
-
-        rootView.findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                startActivity(intent);
-            }
-        });
 
         return rootView;
     }

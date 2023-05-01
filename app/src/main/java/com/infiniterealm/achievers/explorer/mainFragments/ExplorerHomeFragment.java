@@ -9,12 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.infiniterealm.achievers.LoginActivity;
 import com.infiniterealm.achievers.R;
-import com.infiniterealm.achievers.students.activities.StudentActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,9 +20,6 @@ import com.infiniterealm.achievers.students.activities.StudentActivity;
 public class ExplorerHomeFragment extends Fragment {
 
     View rootView;
-//    FirebaseAuth mAuth;
-//    FirebaseUser user;
-//    DatabaseReference mDbRef;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -79,6 +72,7 @@ public class ExplorerHomeFragment extends Fragment {
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), LoginActivity.class);
                 startActivity(intent);
+                requireActivity().finish();
             }
         });
 
