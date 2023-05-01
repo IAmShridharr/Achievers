@@ -134,6 +134,10 @@ public class EditProfileActivity extends AppCompatActivity {
             StorageReference setImage = profileImageRef.child(uid + ".jpg");
 
             UploadTask uploadTask = setImage.putFile(result);
+            if (uploadTask.isComplete()) {
+                Snackbar snackbar = Snackbar.make(editProfileLayout, "Profile Picture Uploaded!", Snackbar.LENGTH_LONG);
+                snackbar.show();
+            }
             uploadTask.addOnSuccessListener(taskSnapshot -> {
 
                 // Get the download URL of the uploaded image

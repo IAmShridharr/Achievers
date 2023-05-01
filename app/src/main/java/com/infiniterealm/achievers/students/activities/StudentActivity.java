@@ -26,7 +26,7 @@ public class StudentActivity extends AppCompatActivity {
     final int TESTS = R.id.tests;
     final int SCHEDULES = R.id.schedule;
     final int HOMEWORK = R.id.homework;
-    final int PROFILE = R.id.profile;
+//    final int PROFILE = R.id.profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,22 +38,16 @@ public class StudentActivity extends AppCompatActivity {
         layout = findViewById(R.id.frame);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case HOME:
-                    navigateToFragment(new HomeFragment());
-                    break;
-                case TESTS:
-                    navigateToFragment(new TestsFragment());
-                    break;
-                case SCHEDULES:
-                    navigateToFragment(new ScheduleFragment());
-                    break;
-                case HOMEWORK:
-                    navigateToFragment(new HomeworkFragment());
-                    break;
-                case PROFILE:
-                    navigateToFragment(new ProfileFragment());
-                    break;
+            if (item.getItemId() == R.id.home) {
+                navigateToFragment(new HomeFragment());
+            } else if (item.getItemId() == R.id.tests) {
+                navigateToFragment(new TestsFragment());
+            } else if (item.getItemId() == R.id.schedule) {
+                navigateToFragment(new ScheduleFragment());
+            } else if (item.getItemId() == R.id.homework) {
+                navigateToFragment(new HomeworkFragment());
+            } else if (item.getItemId() == R.id.profile) {
+                navigateToFragment(new ProfileFragment());
             }
             return true;
         });
