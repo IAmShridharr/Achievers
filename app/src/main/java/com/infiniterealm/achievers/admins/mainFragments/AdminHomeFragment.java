@@ -1,4 +1,4 @@
-package com.infiniterealm.achievers.admins.fragments;
+package com.infiniterealm.achievers.admins.mainFragments;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;

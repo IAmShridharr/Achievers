@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.admins.activities.AdminActivity;
+import com.infiniterealm.achievers.explorer.activities.ExplorerActivity;
 import com.infiniterealm.achievers.students.activities.StudentActivity;
 
 import java.util.Objects;
@@ -33,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
     TextInputEditText loginID, Password;
     ProgressBar progressBar;
     Button login;
-    TextView forgetPassword;
+    TextView skip, forgetPassword;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDbRef;
@@ -49,9 +50,16 @@ public class LoginActivity extends AppCompatActivity {
         Password = findViewById(R.id.input_password);
         progressBar = findViewById(R.id.progress);
         login = findViewById(R.id.login);
+        skip = findViewById(R.id.skip);
         forgetPassword = findViewById(R.id.forget_password);
 
         SharedPreferences mPrefs = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+
+        skip.setOnClickListener(view -> {
+            Intent intent = new Intent(LoginActivity.this, ExplorerActivity.class);
+            startActivity(intent);
+            finish();
+        });
 
         login.setOnClickListener(view -> {
             progressBar.setVisibility(View.VISIBLE);

@@ -1,5 +1,6 @@
-package com.infiniterealm.achievers.admins.fragments;
+package com.infiniterealm.achievers.explorer.mainFragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,14 +9,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.infiniterealm.achievers.LoginActivity;
 import com.infiniterealm.achievers.R;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AdminScheduleFragment#newInstance} factory method to
+ * Use the {@link ExplorerExploreFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminScheduleFragment extends Fragment {
+public class ExplorerExploreFragment extends Fragment {
+
+    View rootView;
+    FirebaseAuth mAuth;
+    FirebaseUser user;
+    DatabaseReference mDbRef;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,7 +36,7 @@ public class AdminScheduleFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public AdminScheduleFragment() {
+    public ExplorerExploreFragment() {
         // Required empty public constructor
     }
 
@@ -36,11 +46,11 @@ public class AdminScheduleFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AdminScheduleFragment.
+     * @return A new instance of fragment ExplorerExploreFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdminScheduleFragment newInstance(String param1, String param2) {
-        AdminScheduleFragment fragment = new AdminScheduleFragment();
+    public static ExplorerExploreFragment newInstance(String param1, String param2) {
+        ExplorerExploreFragment fragment = new ExplorerExploreFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,6 +71,16 @@ public class AdminScheduleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_admin_schedule, container, false);
+        rootView = inflater.inflate(R.layout.fragment_explorer_explore, container, false);
+
+        rootView.findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        return rootView;
     }
 }

@@ -2,10 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/admin_home_layout"
+    android:id="@+id/explorer_home_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".admins.mainFragments.AdminHomeFragment">
+    tools:context=".explorer.mainFragments.ExplorerHomeFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
@@ -19,12 +19,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/logout"
+        android:id="@+id/login"
         style="@style/Widget.Material3.Button.ElevatedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="#9F1B1B"
-        android:text="@string/logout"
+        android:text="@string/login"
         android:textColor="@color/white"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"

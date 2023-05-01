@@ -17,6 +17,10 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".explorer.activities.ExplorerActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
+        <activity
             android:name=".students.activities.helper.EditProfileActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false" />

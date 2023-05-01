@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/explorer_home"
+        android:enabled="true"
+        android:icon="@drawable/baseline_home_24"
+        android:title="@string/home"/>
+    <item
+        android:id="@+id/explorer_explore"
+        android:enabled="true"
+        android:icon="@drawable/baseline_test_24"
+        android:title="@string/explore"/>
+    <item
+        android:id="@+id/explorer_contact"
+        android:enabled="true"
+        android:icon="@drawable/baseline_person_24"
+        android:title="@string/contact_us"/>
+</menu>

@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.widget.FrameLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -21,12 +20,11 @@ import com.infiniterealm.achievers.students.mainFragments.TestsFragment;
 public class StudentActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
-    FrameLayout layout;
     final int HOME = R.id.home;
     final int TESTS = R.id.tests;
-    final int SCHEDULES = R.id.schedule;
+    final int SCHEDULE = R.id.schedule;
     final int HOMEWORK = R.id.homework;
-//    final int PROFILE = R.id.profile;
+    final int PROFILE = R.id.profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,18 +33,17 @@ public class StudentActivity extends AppCompatActivity {
 
         navigateToFragment(new HomeFragment());
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-        layout = findViewById(R.id.frame);
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.home) {
+            if (item.getItemId() == HOME) {
                 navigateToFragment(new HomeFragment());
-            } else if (item.getItemId() == R.id.tests) {
+            } else if (item.getItemId() == TESTS) {
                 navigateToFragment(new TestsFragment());
-            } else if (item.getItemId() == R.id.schedule) {
+            } else if (item.getItemId() == SCHEDULE) {
                 navigateToFragment(new ScheduleFragment());
-            } else if (item.getItemId() == R.id.homework) {
+            } else if (item.getItemId() == HOMEWORK) {
                 navigateToFragment(new HomeworkFragment());
-            } else if (item.getItemId() == R.id.profile) {
+            } else if (item.getItemId() == PROFILE) {
                 navigateToFragment(new ProfileFragment());
             }
             return true;
@@ -61,7 +58,7 @@ public class StudentActivity extends AppCompatActivity {
             navigateToFragment(new HomeFragment());
         } else if (activeID == TESTS) {
             navigateToFragment(new TestsFragment());
-        } else if (activeID == SCHEDULES) {
+        } else if (activeID == SCHEDULE) {
             navigateToFragment(new ScheduleFragment());
         } else if (activeID == HOMEWORK) {
             navigateToFragment(new HomeFragment());

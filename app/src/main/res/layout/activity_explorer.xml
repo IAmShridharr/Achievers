@@ -4,22 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".admins.activities.AdminActivity">
+    tools:context=".explorer.activities.ExplorerActivity">
 
     <FrameLayout
-        android:id="@+id/admin_frame"
+        android:id="@+id/explorer_frame"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/admin_bottom_navigation"
+        app:layout_constraintBottom_toTopOf="@id/explorer_bottom_navigation"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
-
     </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/admin_bottom_navigation"
+        android:id="@+id/explorer_bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -27,6 +25,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:itemActiveIndicatorStyle="@style/App.Custom.Indicator"
         style="@style/Widget.App.BottomNavigationView"
-        app:menu="@menu/bottom_navigation_admin_menu" />
+        app:menu="@menu/bottom_navigation_explorer_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
