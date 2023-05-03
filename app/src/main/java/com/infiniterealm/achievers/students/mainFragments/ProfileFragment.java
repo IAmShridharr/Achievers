@@ -42,7 +42,7 @@ public class ProfileFragment extends Fragment {
     String uid;
     TextView name, standard, rollNumber, email, phone, parentPhone, dob, school;
     ProgressBar progressBar;
-    LinearLayout nameLayout, rollNumberLayout, classLayout, emailLayout, phoneLayout, parentPhoneLayout, dobLayout, schoolLayout, profileLayout;
+    LinearLayout rollNumberLayout, classLayout, emailLayout, phoneLayout, parentPhoneLayout, dobLayout, schoolLayout, profileLayout;
     private ShapeableImageView profileImage;
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -105,7 +105,6 @@ public class ProfileFragment extends Fragment {
         profileImage = rootView.findViewById(R.id.profile_image);
 
         profileLayout = rootView.findViewById(R.id.profile_layout);
-        nameLayout = rootView.findViewById(R.id.name_layout);
         classLayout = rootView.findViewById(R.id.class_layout);
         emailLayout = rootView.findViewById(R.id.email_layout);
         rollNumberLayout = rootView.findViewById(R.id.roll_number_layout);
@@ -158,9 +157,8 @@ public class ProfileFragment extends Fragment {
                 }
                 assert Name != null;
                 if (Name.isEmpty()) {
-                    nameLayout.setVisibility(View.GONE);
+                    name.setText("Set Name");
                 } else {
-                    nameLayout.setVisibility(View.VISIBLE);
                     name.setText(Name);
                 }
                 assert Standard != null;
