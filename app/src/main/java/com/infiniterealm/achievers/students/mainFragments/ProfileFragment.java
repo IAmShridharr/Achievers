@@ -128,6 +128,10 @@ public class ProfileFragment extends Fragment {
             startActivity(intent);
         });
 
+        rootView.findViewById(R.id.contact_teacher).setOnClickListener(view -> {
+
+        });
+
         return rootView;
 
     }
@@ -157,7 +161,8 @@ public class ProfileFragment extends Fragment {
                 }
                 assert Name != null;
                 if (Name.isEmpty()) {
-                    name.setText("Set Name");
+                    String nameText = "Set Name";
+                    name.setText(nameText);
                 } else {
                     name.setText(Name);
                 }

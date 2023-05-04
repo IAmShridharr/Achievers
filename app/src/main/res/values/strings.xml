@@ -47,4 +47,5 @@
     <string name="skip">Skip</string>
     <string name="attendance">Attendance</string>
     <string name="zero">0</string>
+    <string name="chat_with_teacher">Chat with Teacher!</string>
 </resources>
