@@ -24,7 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.R;
-import com.infiniterealm.achievers.students.activities.helper.EditProfileActivity;
+import com.infiniterealm.achievers.students.activities.EditProfileActivity;
 
 /**
  * A simple {@link Fragment} subclass.

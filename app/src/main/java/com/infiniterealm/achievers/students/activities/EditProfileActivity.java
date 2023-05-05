@@ -1,4 +1,4 @@
-package com.infiniterealm.achievers.students.activities.helper;
+package com.infiniterealm.achievers.students.activities;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
