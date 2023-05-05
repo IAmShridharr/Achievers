@@ -47,7 +47,7 @@
                     android:contentDescription="@string/profile"
                     android:scaleType="centerCrop"
                     app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraLarge"
-                    app:srcCompat="@drawable/baseline_sentiment_very_satisfied_24" />
+                    app:srcCompat="@drawable/profile_picture_placeholder" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/input_profile_image"

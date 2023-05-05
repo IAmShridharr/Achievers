@@ -196,7 +196,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 School = snapshot.child("school").getValue(String.class);
 
                 if (DP == null) {
-                    profileImage.setImageResource(R.drawable.baseline_sentiment_very_satisfied_24);
+                    profileImage.setImageResource(R.drawable.profile_picture_placeholder);
                     removeDP.setVisibility(View.GONE);
                     addDP.setVisibility(View.VISIBLE);
                 } else {
@@ -317,7 +317,7 @@ public class EditProfileActivity extends AppCompatActivity {
             // Remove the profile picture URL from the user's Firebase Realtime Database entry
             mDbRef.child("profileImageUrl").setValue(null).addOnSuccessListener(aVoid1 -> {
                 // Set the default profile picture in the ImageView
-                profileImage.setImageResource(R.drawable.baseline_sentiment_very_satisfied_24);
+                profileImage.setImageResource(R.drawable.profile_picture_placeholder);
                 progressBar.setVisibility(View.GONE);
                 Snackbar snackbar = Snackbar.make(editProfileLayout, "Profile Picture Deleted Successfully!", Snackbar.LENGTH_LONG);
                 snackbar.show();

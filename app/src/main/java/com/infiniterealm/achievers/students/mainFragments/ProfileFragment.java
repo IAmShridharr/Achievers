@@ -151,7 +151,7 @@ public class ProfileFragment extends Fragment {
                 String School = snapshot.child(uid).child("school").getValue(String.class);
 
                 if (DP == null) {
-                    profileImage.setImageResource(R.drawable.baseline_person_24);
+                    profileImage.setImageResource(R.drawable.profile_picture_placeholder);
                 } else {
                     if (isAdded()) {
                         Glide.with(requireContext())
