@@ -1,26 +1,32 @@
 package com.infiniterealm.achievers.admins.mainFragments;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.database.Query;
 import com.infiniterealm.achievers.R;
-import com.infiniterealm.achievers.students.adapters.StudentAdapter;
-import com.infiniterealm.achievers.students.models.Student;
-
-import java.util.ArrayList;
+import com.infiniterealm.achievers.admins.activities.AddStudentActivity;
+import com.infiniterealm.achievers.admins.adapters.StudentAdapter;
+import com.infiniterealm.achievers.admins.models.StudentListItemModel;
+import com.infiniterealm.achievers.students.mainFragments.HomeFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,9 +35,11 @@ import java.util.ArrayList;
  */
 public class AdminProfileFragment extends Fragment {
 
-
-
     View rootView;
+    RecyclerView studentList;
+    StudentAdapter studentAdapter;
+
+    Button addStudent;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -77,10 +85,84 @@ public class AdminProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        rootView = inflater.inflate(R.layout.fragment_admin_profile, container, false);
 
+        addStudent = rootView.findViewById(R.id.addStudent);
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        assert user != null;
+        String uid = user.getUid();
+
+        studentList = rootView.findViewById(R.id.studentsList);
+        studentList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("users");
+
+        FirebaseRecyclerOptions<StudentListItemModel> options =
+                new FirebaseRecyclerOptions.Builder<StudentListItemModel>()
+                        .setQuery(query, StudentListItemModel.class)
+                        .build();
+
+        studentAdapter = new StudentAdapter(options);
+        studentList.setAdapter(studentAdapter);
+
+        addStudent.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), AddStudentActivity.class);
+            startActivity(intent);
+        });
 
 
         return rootView;
+    }
+
+    private void setUpRecyclerView() {
+        studentList = rootView.findViewById(R.id.studentsList);
+        studentList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Query query = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("users");
+
+        FirebaseRecyclerOptions<StudentListItemModel> options =
+                new FirebaseRecyclerOptions.Builder<StudentListItemModel>()
+                        .setQuery(query, StudentListItemModel.class)
+                        .build();
+
+        studentAdapter = new StudentAdapter(options);
+        studentList.setAdapter(studentAdapter);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        studentAdapter.startListening();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        studentAdapter.stopListening();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        studentAdapter.stopListening();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setUpRecyclerView();
+        studentAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        studentAdapter.stopListening();
     }
 }

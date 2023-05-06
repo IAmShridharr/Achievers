@@ -38,12 +38,13 @@ import java.util.Objects;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    private TextInputEditText name, standard, rollNumber, email, dobInput, phone, parentPhone, school;
+    private TextInputEditText name, rollNumber, email, dobInput, phone, parentPhone, school;
     private StorageReference profileImageRef;
     private String uid;
     private DatabaseReference mDbRef;
+    FirebaseUser student;
     private TextView addDP, removeDP;
-    private String DP, Name, Standard, RollNumber, Email, Phone, ParentPhone, DOB, School;
+    private String DP, Name, RollNumber, Email, Phone, ParentPhone, DOB, School;
     private ShapeableImageView profileImage;
     private LinearLayout editProfileLayout;
     private ActivityResultLauncher<String> mGetContent;
@@ -57,7 +58,7 @@ public class EditProfileActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser student = mAuth.getCurrentUser();
+        student = mAuth.getCurrentUser();
         assert student != null;
         uid = student.getUid();
         mDbRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
@@ -69,8 +70,7 @@ public class EditProfileActivity extends AppCompatActivity {
         addDP = findViewById(R.id.add_profile_picture);
         removeDP = findViewById(R.id.remove_profile_picture);
         name = findViewById(R.id.input_name);
-        standard = findViewById(R.id.input_standard);
-        rollNumber = findViewById(R.id.input_roll_number);
+        rollNumber = findViewById(R.id.input_id);
         email = findViewById(R.id.input_email);
         dobInput = findViewById(R.id.input_dob);
         phone = findViewById(R.id.input_phone);
@@ -187,15 +187,14 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 DP = snapshot.child("profileImageUrl").getValue(String.class);
                 Name = snapshot.child("name").getValue(String.class);
-                Standard = snapshot.child("class").getValue(String.class);
-                RollNumber = snapshot.child("roll_no").getValue(String.class);
+                RollNumber = snapshot.child("id").getValue(String.class);
                 Email = snapshot.child("email").getValue(String.class);
                 Phone = snapshot.child("phone").getValue(String.class);
-                ParentPhone = snapshot.child("parent_phone").getValue(String.class);
+                ParentPhone = snapshot.child("parentPhone").getValue(String.class);
                 DOB = snapshot.child("dob").getValue(String.class);
                 School = snapshot.child("school").getValue(String.class);
 
-                if (DP == null) {
+                if (DP == null || DP.equals("")) {
                     profileImage.setImageResource(R.drawable.profile_picture_placeholder);
                     removeDP.setVisibility(View.GONE);
                     addDP.setVisibility(View.VISIBLE);
@@ -211,12 +210,6 @@ public class EditProfileActivity extends AppCompatActivity {
                     name.setText(Name);
                 } else {
                     name.setText(Name);
-                }
-                assert Standard != null;
-                if (Standard.isEmpty()) {
-                    standard.setText(Standard);
-                } else {
-                    standard.setText(Standard);
                 }
                 assert RollNumber != null;
                 if (RollNumber.isEmpty()) {
@@ -276,7 +269,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     public boolean isParentPhoneChanged() {
         if (!ParentPhone.equals(Objects.requireNonNull(parentPhone.getText()).toString())) {
-            mDbRef.child("parent_phone").setValue(parentPhone.getText().toString());
+            mDbRef.child("parentPhone").setValue(parentPhone.getText().toString());
             ParentPhone = parentPhone.getText().toString();
             return true;
         } else {
@@ -286,7 +279,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     public boolean isDOBChanged() {
         if (!DOB.equals(Objects.requireNonNull(dobInput.getText()).toString())) {
-            if (dobInput.getText().toString().length() == 10) {
+            if (dobInput.getText().toString().length() == 10 || dobInput.getText().toString().equals("")) {
                 mDbRef.child("dob").setValue(dobInput.getText().toString());
                 DOB = dobInput.getText().toString();
                 return true;
@@ -315,7 +308,7 @@ public class EditProfileActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         profileImageRef.child(uid + ".jpg").delete().addOnSuccessListener(aVoid -> {
             // Remove the profile picture URL from the user's Firebase Realtime Database entry
-            mDbRef.child("profileImageUrl").setValue(null).addOnSuccessListener(aVoid1 -> {
+            mDbRef.child("profileImageUrl").setValue("").addOnSuccessListener(aVoid1 -> {
                 // Set the default profile picture in the ImageView
                 profileImage.setImageResource(R.drawable.profile_picture_placeholder);
                 progressBar.setVisibility(View.GONE);

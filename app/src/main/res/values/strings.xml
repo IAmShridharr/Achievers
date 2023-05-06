@@ -48,4 +48,5 @@
     <string name="attendance">Attendance</string>
     <string name="zero">0</string>
     <string name="chat_with_teacher">Chat with Teacher!</string>
+    <string name="add_student">Add Student</string>
 </resources>

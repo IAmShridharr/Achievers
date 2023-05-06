@@ -1,9 +1,12 @@
 package com.infiniterealm.achievers;
 
+import static android.content.ContentValues.TAG;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -21,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.admins.activities.AdminActivity;
 import com.infiniterealm.achievers.explorer.activities.ExplorerActivity;
@@ -35,6 +39,8 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar progressBar;
     Button login;
     TextView skip, forgetPassword;
+
+    SharedPreferences mPrefs;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDbRef;
@@ -53,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
         skip = findViewById(R.id.skip);
         forgetPassword = findViewById(R.id.forget_password);
 
-        SharedPreferences mPrefs = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        mPrefs = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
         skip.setOnClickListener(view -> {
             Intent intent = new Intent(LoginActivity.this, ExplorerActivity.class);
@@ -64,91 +70,118 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(view -> {
             progressBar.setVisibility(View.VISIBLE);
             if (!Objects.requireNonNull(loginID.getText()).toString().isEmpty() && !Objects.requireNonNull(Password.getText()).toString().isEmpty()) {
-                String email = loginID.getText().toString();
-                String password = Password.getText().toString();
 
-                mAuth = FirebaseAuth.getInstance();
-                mDbRef = FirebaseDatabase.getInstance().getReference();
 
-                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        progressBar.setVisibility(View.GONE);
-                        // Sign in success, update UI with the signed-in user's information
-                        student = mAuth.getCurrentUser();
-                        assert student != null;
-                        String uid = student.getUid();
+                String rollNumber = Objects.requireNonNull(loginID.getText()).toString();
+                String password = Objects.requireNonNull(Password.getText()).toString();
 
-                        mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                // Check if uid exists in roles > admins
-                                if (dataSnapshot.child("roles").child("admins").hasChild(uid)) {
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+                Query query = reference.orderByChild("id").equalTo(rollNumber);
 
-                                    // Save the user's login status
-                                    SharedPreferences.Editor editor = mPrefs.edit();
-                                    editor.putBoolean("isLoggedIn", true);
-                                    editor.putString("email", email);
-                                    editor.putString("password", password);
-                                    editor.apply();
+                query.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            loginID.setError(null);
+                            DataSnapshot firstChild = snapshot.getChildren().iterator().next();
+                            String passwordFromDB = firstChild.child("password").getValue(String.class);
+                            Log.d(TAG, passwordFromDB);
+                            if (password.equals(passwordFromDB)) {
+                                Password.setError(null);
+                                String email = firstChild.child("email").getValue(String.class);
+                                Log.d(TAG, email);
 
-                                    mDbRef.child("users").child(uid).child("password").setValue(password);
+                                mAuth = FirebaseAuth.getInstance();
+                                mDbRef = FirebaseDatabase.getInstance().getReference();
 
-                                    Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                                // Check if uid exists in roles > students
-                                else if (dataSnapshot.child("roles").child("students").hasChild(uid)) {
+                                assert email != null;
+                                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        progressBar.setVisibility(View.GONE);
+                                        // Sign in success, update UI with the signed-in user's information
+                                        student = mAuth.getCurrentUser();
+                                        assert student != null;
+                                        String uid = student.getUid();
+                                        Log.d(TAG, uid);
 
-                                    // Save the user's login status
-                                    SharedPreferences.Editor editor = mPrefs.edit();
-                                    editor.putBoolean("isLoggedIn", true);
-                                    editor.putString("email", email);
-                                    editor.putString("password", password);
-                                    editor.apply();
+                                        mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.child("roles").child("students").hasChild(uid)) {
+                                                    // Save the user's login status
+                                                    SharedPreferences.Editor editor = mPrefs.edit();
+                                                    editor.putBoolean("isLoggedIn", true);
+                                                    editor.putString("email", email);
+                                                    editor.putString("password", password);
+                                                    editor.putString("id", rollNumber);
+                                                    editor.apply();
 
-                                    mDbRef.child("users").child(uid).child("password").setValue(password);
+                                                    Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                } else if (dataSnapshot.child("roles").child("admins").hasChild(uid)) {
+                                                    // Save the user's login status
+                                                    SharedPreferences.Editor editor = mPrefs.edit();
+                                                    editor.putBoolean("isLoggedIn", true);
+                                                    editor.putString("email", email);
+                                                    editor.putString("password", password);
+                                                    editor.apply();
 
-                                    Intent intent = new Intent(LoginActivity.this, StudentActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                                // If uid doesn't exist in either roles > admins or roles > students, show an error message
-                                else {
-                                    Snackbar snackbar = Snackbar.make(layout, "Something is wrong", Snackbar.LENGTH_LONG);
-                                    snackbar.show();
-                                }
+                                                    Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                } else {
+                                                    Snackbar snackbar = Snackbar
+                                                            .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
+                                                    snackbar.show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                // Handle error case
+                                                // display an error message to the user
+                                                Snackbar snackbar = Snackbar
+                                                        .make(layout, "Error retrieving data from database", Snackbar.LENGTH_LONG);
+                                                snackbar.show();
+                                            }
+                                        });
+                                    } else {
+                                        progressBar.setVisibility(View.GONE);
+                                        // If sign in fails, display a message to the user.
+                                        if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
+                                            Snackbar snackbar = Snackbar
+                                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(66), Snackbar.LENGTH_LONG);
+                                            snackbar.show();
+                                        } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
+                                            Snackbar snackbar = Snackbar
+                                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(59), Snackbar.LENGTH_LONG);
+                                            snackbar.show();
+                                        } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
+                                            Snackbar snackbar = Snackbar
+                                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141), Snackbar.LENGTH_LONG);
+                                            snackbar.show();
+                                        } else {
+                                            Snackbar snackbar = Snackbar
+                                                    .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
+                                            snackbar.show();
+                                        }
+                                    }
+                                });
+
+                            } else {
+                                Password.setError("Invalid Password");
+                                Password.requestFocus();
                             }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                // Handle error case
-                                // display an error message to the user
-                                Snackbar snackbar = Snackbar
-                                        .make(layout, "Error retrieving data from database", Snackbar.LENGTH_LONG);
-                                snackbar.show();
-                            }
-                        });
-                    } else {
-                        progressBar.setVisibility(View.GONE);
-                        // If sign in fails, display a message to the user.
-                        if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
-                            Snackbar snackbar = Snackbar
-                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(66), Snackbar.LENGTH_LONG);
-                            snackbar.show();
-                        } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
-                            Snackbar snackbar = Snackbar
-                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(59), Snackbar.LENGTH_LONG);
-                            snackbar.show();
-                        } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
-                            Snackbar snackbar = Snackbar
-                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141), Snackbar.LENGTH_LONG);
-                            snackbar.show();
                         } else {
-                            Snackbar snackbar = Snackbar
-                                    .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
-                            snackbar.show();
+                            loginID.setError("Invalid Login ID");
+                            loginID.requestFocus();
                         }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
                     }
                 });
             } else {
@@ -181,6 +214,198 @@ public class LoginActivity extends AppCompatActivity {
                     snackbar.show();
                 }
             });
+        });
+    }
+
+    public void StudentLogin() {
+        String rollNumber = Objects.requireNonNull(loginID.getText()).toString();
+        String password = Objects.requireNonNull(Password.getText()).toString();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+        Query query = reference.orderByChild("id").equalTo(rollNumber);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    loginID.setError(null);
+                    DataSnapshot firstChild = snapshot.getChildren().iterator().next();
+                    String passwordFromDB = firstChild.child("password").getValue(String.class);
+                    if (password.equals(passwordFromDB)) {
+                        Password.setError(null);
+                        String email = firstChild.child("email").getValue(String.class);
+
+                        mAuth = FirebaseAuth.getInstance();
+                        mDbRef = FirebaseDatabase.getInstance().getReference();
+
+                        assert email != null;
+                        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                progressBar.setVisibility(View.GONE);
+                                // Sign in success, update UI with the signed-in user's information
+                                student = mAuth.getCurrentUser();
+                                assert student != null;
+                                String uid = student.getUid();
+
+                                mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        // Save the user's login status
+                                        SharedPreferences.Editor editor = mPrefs.edit();
+                                        editor.putBoolean("isLoggedIn", true);
+                                        editor.putString("email", email);
+                                        editor.putString("password", password);
+                                        editor.putString("id", rollNumber);
+                                        editor.apply();
+
+                                        Intent intent = new Intent(LoginActivity.this, StudentActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        // Handle error case
+                                        // display an error message to the user
+                                        Snackbar snackbar = Snackbar
+                                                .make(layout, "Error retrieving data from database", Snackbar.LENGTH_LONG);
+                                        snackbar.show();
+                                    }
+                                });
+                            } else {
+                                progressBar.setVisibility(View.GONE);
+                                // If sign in fails, display a message to the user.
+                                if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
+                                    Snackbar snackbar = Snackbar
+                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(66), Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
+                                    Snackbar snackbar = Snackbar
+                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(59), Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
+                                    Snackbar snackbar = Snackbar
+                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141), Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                } else {
+                                    Snackbar snackbar = Snackbar
+                                            .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                }
+                            }
+                        });
+
+                    } else {
+                        Password.setError("Invalid Password");
+                        Password.requestFocus();
+                    }
+                } else {
+                    loginID.setError("Invalid Login ID");
+                    loginID.requestFocus();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void AdminLogin() {
+        String rollNumber = Objects.requireNonNull(loginID.getText()).toString();
+        String password = Objects.requireNonNull(Password.getText()).toString();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("admins");
+        Query query = reference.orderByChild("id").equalTo(rollNumber);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    loginID.setError(null);
+                    DataSnapshot firstChild = snapshot.getChildren().iterator().next();
+                    String passwordFromDB = firstChild.child("password").getValue(String.class);
+                    Log.d(TAG, passwordFromDB);
+                    if (password.equals(passwordFromDB)) {
+                        Password.setError(null);
+                        String email = firstChild.child("email").getValue(String.class);
+                        Log.d(TAG, email);
+
+                        mAuth = FirebaseAuth.getInstance();
+                        mDbRef = FirebaseDatabase.getInstance().getReference();
+
+                        assert email != null;
+                        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                progressBar.setVisibility(View.GONE);
+                                // Sign in success, update UI with the signed-in user's information
+                                student = mAuth.getCurrentUser();
+                                assert student != null;
+                                String uid = student.getUid();
+                                Log.d(TAG, uid);
+
+                                mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        // Save the user's login status
+                                        SharedPreferences.Editor editor = mPrefs.edit();
+                                        editor.putBoolean("isLoggedIn", true);
+                                        editor.putString("email", email);
+                                        editor.putString("password", password);
+                                        editor.apply();
+
+                                        Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        // Handle error case
+                                        // display an error message to the user
+                                        Snackbar snackbar = Snackbar
+                                                .make(layout, "Error retrieving data from database", Snackbar.LENGTH_LONG);
+                                        snackbar.show();
+                                    }
+                                });
+                            } else {
+                                progressBar.setVisibility(View.GONE);
+                                // If sign in fails, display a message to the user.
+                                if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
+                                    Snackbar snackbar = Snackbar
+                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(66), Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
+                                    Snackbar snackbar = Snackbar
+                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(59), Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
+                                    Snackbar snackbar = Snackbar
+                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141), Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                } else {
+                                    Snackbar snackbar = Snackbar
+                                            .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
+                                    snackbar.show();
+                                }
+                            }
+                        });
+
+                    } else {
+                        Password.setError("Invalid Password");
+                        Password.requestFocus();
+                    }
+                } else {
+                    loginID.setError("Invalid Login ID");
+                    loginID.requestFocus();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
         });
     }
 }

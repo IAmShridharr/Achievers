@@ -40,9 +40,9 @@ public class ProfileFragment extends Fragment {
     FirebaseUser user;
     DatabaseReference mDbRef;
     String uid;
-    TextView name, standard, rollNumber, email, phone, parentPhone, dob, school;
+    TextView name, rollNumber, email, phone, parentPhone, dob, school;
     ProgressBar progressBar;
-    LinearLayout rollNumberLayout, classLayout, emailLayout, phoneLayout, parentPhoneLayout, dobLayout, schoolLayout, profileLayout;
+    LinearLayout rollNumberLayout, emailLayout, phoneLayout, parentPhoneLayout, dobLayout, schoolLayout, profileLayout;
     private ShapeableImageView profileImage;
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -94,7 +94,6 @@ public class ProfileFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
 
         name = rootView.findViewById(R.id.name);
-        standard = rootView.findViewById(R.id.standard);
         rollNumber = rootView.findViewById(R.id.roll_number);
         email = rootView.findViewById(R.id.email);
         phone = rootView.findViewById(R.id.phone);
@@ -105,7 +104,6 @@ public class ProfileFragment extends Fragment {
         profileImage = rootView.findViewById(R.id.profile_image);
 
         profileLayout = rootView.findViewById(R.id.profile_layout);
-        classLayout = rootView.findViewById(R.id.class_layout);
         emailLayout = rootView.findViewById(R.id.email_layout);
         rollNumberLayout = rootView.findViewById(R.id.roll_number_layout);
         phoneLayout = rootView.findViewById(R.id.phone_layout);
@@ -142,15 +140,14 @@ public class ProfileFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String DP = snapshot.child(uid).child("profileImageUrl").getValue(String.class);
                 String Name = snapshot.child(uid).child("name").getValue(String.class);
-                String Standard = snapshot.child(uid).child("class").getValue(String.class);
                 String Email = snapshot.child(uid).child("email").getValue(String.class);
-                String RollNumber = snapshot.child(uid).child("roll_no").getValue(String.class);
+                String RollNumber = snapshot.child(uid).child("id").getValue(String.class);
                 String Phone = snapshot.child(uid).child("phone").getValue(String.class);
-                String ParentPhone = snapshot.child(uid).child("parent_phone").getValue(String.class);
+                String ParentPhone = snapshot.child(uid).child("parentPhone").getValue(String.class);
                 String DOB = snapshot.child(uid).child("dob").getValue(String.class);
                 String School = snapshot.child(uid).child("school").getValue(String.class);
 
-                if (DP == null) {
+                if (DP == null || DP.equals("")) {
                     profileImage.setImageResource(R.drawable.profile_picture_placeholder);
                 } else {
                     if (isAdded()) {
@@ -165,13 +162,6 @@ public class ProfileFragment extends Fragment {
                     name.setText(nameText);
                 } else {
                     name.setText(Name);
-                }
-                assert Standard != null;
-                if (Standard.isEmpty()) {
-                    classLayout.setVisibility(View.GONE);
-                } else {
-                    classLayout.setVisibility(View.VISIBLE);
-                    standard.setText(Standard);
                 }
                 assert RollNumber != null;
                 if (RollNumber.isEmpty()) {

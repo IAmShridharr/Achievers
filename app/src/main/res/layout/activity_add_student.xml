@@ -2,10 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login_layout"
+    android:id="@+id/add_student_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    android:padding="20dp"
+    tools:context=".admins.activities.AddStudentActivity">
 
     <ScrollView
         android:layout_width="0dp"
@@ -26,28 +27,66 @@
             android:paddingEnd="20dp"
             android:paddingBottom="20dp">
 
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/animationView"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                app:lottie_autoPlay="true"
-                app:lottie_loop="true"
-                app:lottie_rawRes="@raw/login" />
-
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/login"
+                android:text="@string/add_student"
                 android:textSize="34sp"
                 android:textStyle="bold" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_login_id_layout"
+                android:id="@+id/input_name_layout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/login_id"
+                android:hint="@string/name"
+                android:maxWidth="488dp"
+                android:padding="10dp"
+                app:endIconMode="clear_text"
+                app:startIconContentDescription="Name Icon"
+                app:startIconDrawable="@drawable/baseline_abc_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLength="50"
+                    android:textColorHint="#8D6E63"
+                    tools:ignore="TextContrastCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_id_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/roll_number"
+                android:maxWidth="488dp"
+                android:padding="10dp"
+                app:endIconMode="clear_text"
+                app:startIconContentDescription="Number Icon"
+                app:startIconDrawable="@drawable/baseline_numbers_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLength="50"
+                    android:textColorHint="#8D6E63"
+                    tools:ignore="TextContrastCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_email_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/email"
                 android:maxWidth="488dp"
                 android:padding="10dp"
                 app:endIconMode="clear_text"
@@ -55,10 +94,10 @@
                 app:startIconDrawable="@drawable/baseline_alternate_email_24">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_login_id"
+                    android:id="@+id/input_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
+                    android:inputType="textEmailAddress"
                     android:maxLength="50"
                     android:textColorHint="#8D6E63"
                     tools:ignore="TextContrastCheck" />
@@ -88,18 +127,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/forget_password"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="10dp"
-                android:text="@string/forgot_password"
-                android:textColor="@color/purple_500"
-                android:textSize="16sp" />
-
             <ProgressBar
                 android:id="@+id/progress"
                 android:layout_width="wrap_content"
@@ -107,35 +134,17 @@
                 android:indeterminateTint="@color/red_700"
                 android:visibility="gone" />
 
-            <Button
-                android:id="@+id/login"
-                style="@style/Widget.Material3.Button.ElevatedButton"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:backgroundTint="@color/red_700"
-                android:text="@string/login"
-                android:textColor="@color/white"
+                android:text="@string/add_student"
                 android:textSize="24sp"
+                app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraSmall"
                 tools:ignore="DuplicateSpeakableTextCheck" />
 
         </LinearLayout>
     </ScrollView>
-
-    <TextView
-        android:id="@+id/skip"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="20dp"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        android:text="@string/skip"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

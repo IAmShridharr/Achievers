@@ -85,14 +85,13 @@ public class HomeFragment extends Fragment {
         sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        assert user != null;
-        mDbRef = FirebaseDatabase.getInstance().getReference();
+        mDbRef = FirebaseDatabase.getInstance().getReference("users");
 
-        mDbRef.child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDbRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.child("name").getValue(String.class);
-                String roll = dataSnapshot.child("roll_no").getValue(String.class);
+                String roll = dataSnapshot.child("id").getValue(String.class);
                 // Use the retrieved name value as needed
                 Log.d(TAG, name);
                 Log.d(TAG, roll);

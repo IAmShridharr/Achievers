@@ -88,11 +88,11 @@ public class AdminHomeFragment extends Fragment {
         assert user != null;
         mDbRef = FirebaseDatabase.getInstance().getReference();
 
-        mDbRef.child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDbRef.child("admins").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.child("name").getValue(String.class);
-                String pass = dataSnapshot.child("pass_id").getValue(String.class);
+                String pass = dataSnapshot.child("id").getValue(String.class);
                 // Use the retrieved name value as needed
                 Log.d(TAG, name);
                 Log.d(TAG, pass);

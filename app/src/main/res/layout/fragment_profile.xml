@@ -143,29 +143,6 @@
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/class_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/class_heading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/standard_"
-                    android:textSize="16sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/standard"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:text=""
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/roll_number_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

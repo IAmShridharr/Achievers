@@ -139,32 +139,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/input_standard_layout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:focusable="false"
-                    android:hint="@string/standard"
-                    android:maxWidth="488dp"
-                    android:padding="10dp"
-                    app:endIconMode="clear_text"
-                    app:startIconContentDescription="School Icon"
-                    app:startIconDrawable="@drawable/baseline_psychology_24">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/input_standard"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:clickable="false"
-                        android:focusable="false"
-                        android:inputType="none"
-                        android:textColorHint="#8D6E63"
-                        tools:ignore="VisualLintTextFieldSize,TextContrastCheck" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/input_roll_number_layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -179,7 +153,7 @@
                     app:startIconDrawable="@drawable/baseline_numbers_24">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/input_roll_number"
+                        android:id="@+id/input_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:clickable="false"
