@@ -106,7 +106,7 @@ public class AdminProfileFragment extends Fragment {
                         .setQuery(query, StudentListItemModel.class)
                         .build();
 
-        studentAdapter = new StudentAdapter(options);
+        studentAdapter = new StudentAdapter(options, requireContext());
         studentList.setAdapter(studentAdapter);
 
         addStudent.setOnClickListener(view -> {
@@ -131,7 +131,7 @@ public class AdminProfileFragment extends Fragment {
                         .setQuery(query, StudentListItemModel.class)
                         .build();
 
-        studentAdapter = new StudentAdapter(options);
+        studentAdapter = new StudentAdapter(options, requireContext());
         studentList.setAdapter(studentAdapter);
     }
 

@@ -70,120 +70,11 @@ public class LoginActivity extends AppCompatActivity {
         login.setOnClickListener(view -> {
             progressBar.setVisibility(View.VISIBLE);
             if (!Objects.requireNonNull(loginID.getText()).toString().isEmpty() && !Objects.requireNonNull(Password.getText()).toString().isEmpty()) {
-
-
-                String rollNumber = Objects.requireNonNull(loginID.getText()).toString();
-                String password = Objects.requireNonNull(Password.getText()).toString();
-
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-                Query query = reference.orderByChild("id").equalTo(rollNumber);
-
-                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            loginID.setError(null);
-                            DataSnapshot firstChild = snapshot.getChildren().iterator().next();
-                            String passwordFromDB = firstChild.child("password").getValue(String.class);
-                            Log.d(TAG, passwordFromDB);
-                            if (password.equals(passwordFromDB)) {
-                                Password.setError(null);
-                                String email = firstChild.child("email").getValue(String.class);
-                                Log.d(TAG, email);
-
-                                mAuth = FirebaseAuth.getInstance();
-                                mDbRef = FirebaseDatabase.getInstance().getReference();
-
-                                assert email != null;
-                                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        progressBar.setVisibility(View.GONE);
-                                        // Sign in success, update UI with the signed-in user's information
-                                        student = mAuth.getCurrentUser();
-                                        assert student != null;
-                                        String uid = student.getUid();
-                                        Log.d(TAG, uid);
-
-                                        mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                if (dataSnapshot.child("roles").child("students").hasChild(uid)) {
-                                                    // Save the user's login status
-                                                    SharedPreferences.Editor editor = mPrefs.edit();
-                                                    editor.putBoolean("isLoggedIn", true);
-                                                    editor.putString("email", email);
-                                                    editor.putString("password", password);
-                                                    editor.putString("id", rollNumber);
-                                                    editor.apply();
-
-                                                    Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
-                                                    startActivity(intent);
-                                                    finish();
-                                                } else if (dataSnapshot.child("roles").child("admins").hasChild(uid)) {
-                                                    // Save the user's login status
-                                                    SharedPreferences.Editor editor = mPrefs.edit();
-                                                    editor.putBoolean("isLoggedIn", true);
-                                                    editor.putString("email", email);
-                                                    editor.putString("password", password);
-                                                    editor.apply();
-
-                                                    Intent intent = new Intent(LoginActivity.this, AdminActivity.class);
-                                                    startActivity(intent);
-                                                    finish();
-                                                } else {
-                                                    Snackbar snackbar = Snackbar
-                                                            .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
-                                                    snackbar.show();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                // Handle error case
-                                                // display an error message to the user
-                                                Snackbar snackbar = Snackbar
-                                                        .make(layout, "Error retrieving data from database", Snackbar.LENGTH_LONG);
-                                                snackbar.show();
-                                            }
-                                        });
-                                    } else {
-                                        progressBar.setVisibility(View.GONE);
-                                        // If sign in fails, display a message to the user.
-                                        if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
-                                            Snackbar snackbar = Snackbar
-                                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(66), Snackbar.LENGTH_LONG);
-                                            snackbar.show();
-                                        } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
-                                            Snackbar snackbar = Snackbar
-                                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(59), Snackbar.LENGTH_LONG);
-                                            snackbar.show();
-                                        } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
-                                            Snackbar snackbar = Snackbar
-                                                    .make(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141), Snackbar.LENGTH_LONG);
-                                            snackbar.show();
-                                        } else {
-                                            Snackbar snackbar = Snackbar
-                                                    .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
-                                            snackbar.show();
-                                        }
-                                    }
-                                });
-
-                            } else {
-                                Password.setError("Invalid Password");
-                                Password.requestFocus();
-                            }
-                        } else {
-                            loginID.setError("Invalid Login ID");
-                            loginID.requestFocus();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                if (loginID.getText().toString().contains("A")) {
+                    AdminLogin();
+                } else {
+                    StudentLogin();
+                }
             } else {
                 progressBar.setVisibility(View.GONE);
 
@@ -243,10 +134,6 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 progressBar.setVisibility(View.GONE);
                                 // Sign in success, update UI with the signed-in user's information
-                                student = mAuth.getCurrentUser();
-                                assert student != null;
-                                String uid = student.getUid();
-
                                 mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -340,11 +227,6 @@ public class LoginActivity extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 progressBar.setVisibility(View.GONE);
                                 // Sign in success, update UI with the signed-in user's information
-                                student = mAuth.getCurrentUser();
-                                assert student != null;
-                                String uid = student.getUid();
-                                Log.d(TAG, uid);
-
                                 mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -391,7 +273,6 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             }
                         });
-
                     } else {
                         Password.setError("Invalid Password");
                         Password.requestFocus();

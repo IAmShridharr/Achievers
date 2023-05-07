@@ -49,4 +49,9 @@
     <string name="zero">0</string>
     <string name="chat_with_teacher">Chat with Teacher!</string>
     <string name="add_student">Add Student</string>
+    <string name="call">Call</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="whatsapp_button">WhatsApp Button</string>
+    <string name="call_button">Call Button</string>
+    <string name="delete_image">Delete Image</string>
 </resources>
