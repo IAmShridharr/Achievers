@@ -85,7 +85,7 @@ public class HomeFragment extends Fragment {
         sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        mDbRef = FirebaseDatabase.getInstance().getReference("users");
+        mDbRef = FirebaseDatabase.getInstance().getReference("students");
 
         mDbRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

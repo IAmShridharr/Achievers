@@ -91,15 +91,13 @@ public class AdminProfileFragment extends Fragment {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        assert user != null;
-        String uid = user.getUid();
 
         studentList = rootView.findViewById(R.id.studentsList);
         studentList.setLayoutManager(new LinearLayoutManager(getContext()));
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("users");
+                .child("students");
 
         FirebaseRecyclerOptions<StudentListItemModel> options =
                 new FirebaseRecyclerOptions.Builder<StudentListItemModel>()
@@ -124,7 +122,7 @@ public class AdminProfileFragment extends Fragment {
 
         Query query = FirebaseDatabase.getInstance()
                 .getReference()
-                .child("users");
+                .child("students");
 
         FirebaseRecyclerOptions<StudentListItemModel> options =
                 new FirebaseRecyclerOptions.Builder<StudentListItemModel>()

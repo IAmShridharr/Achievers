@@ -19,7 +19,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,7 +43,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDbRef;
-    private FirebaseUser student;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +110,8 @@ public class LoginActivity extends AppCompatActivity {
         String rollNumber = Objects.requireNonNull(loginID.getText()).toString();
         String password = Objects.requireNonNull(Password.getText()).toString();
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("students");
+
         Query query = reference.orderByChild("id").equalTo(rollNumber);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {

@@ -57,9 +57,8 @@ public class SplashScreenActivity extends AppCompatActivity {
         textView.setText(Brand);
 
         ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
-        animator.setDuration(2000); // 1 second
+        animator.setDuration(2000); // 2 second
         animator.setRepeatCount(0);
-//        animator.setRepeatMode(ValueAnimator.REVERSE);
 
         animator.addUpdateListener(animator1 -> {
             float value = (float) animator1.getAnimatedValue();

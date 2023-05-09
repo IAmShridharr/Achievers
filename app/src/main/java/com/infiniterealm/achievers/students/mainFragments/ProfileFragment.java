@@ -1,6 +1,8 @@
 package com.infiniterealm.achievers.students.mainFragments;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -25,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.students.activities.EditProfileActivity;
+
+import java.net.URLEncoder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -111,7 +115,7 @@ public class ProfileFragment extends Fragment {
         dobLayout = rootView.findViewById(R.id.dob_layout);
         schoolLayout = rootView.findViewById(R.id.school_layout);
 
-        mDbRef = FirebaseDatabase.getInstance().getReference("users");
+        mDbRef = FirebaseDatabase.getInstance().getReference("students");
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         assert user != null;
@@ -127,7 +131,31 @@ public class ProfileFragment extends Fragment {
         });
 
         rootView.findViewById(R.id.contact_teacher).setOnClickListener(view -> {
+            Snackbar bar = Snackbar.make(profileLayout, "Opening WhatsApp...", Snackbar.LENGTH_LONG);
+            bar.show();
 
+            String phoneNumberWithCountryCode = "+918104810125";
+            String message = "Hello Bhaiya, I got a question!";
+
+            try {
+                PackageManager packageManager = requireContext().getPackageManager();
+                Intent i = new Intent(Intent.ACTION_VIEW);
+
+                String url = "https://api.whatsapp.com/send?phone=" + phoneNumberWithCountryCode + "&text=" + URLEncoder.encode(message, "UTF-8");
+                i.setPackage("com.whatsapp");
+                i.setData(Uri.parse(url));
+
+                if (i.resolveActivity(packageManager) != null) {
+                    requireContext().startActivity(i);
+                } else {
+                    Snackbar snackbar = Snackbar.make(profileLayout, "WhatsApp not Installed!", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                Snackbar snackbar = Snackbar.make(profileLayout, "WhatsApp not Installed!", Snackbar.LENGTH_LONG);
+                snackbar.show();
+            }
         });
 
         return rootView;

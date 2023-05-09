@@ -61,7 +61,7 @@ public class EditProfileActivity extends AppCompatActivity {
         student = mAuth.getCurrentUser();
         assert student != null;
         uid = student.getUid();
-        mDbRef = FirebaseDatabase.getInstance().getReference("users").child(uid);
+        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(uid);
         FirebaseStorage storage = FirebaseStorage.getInstance();
         profileImageRef = storage.getReference().child("students/profile_pictures/" + uid);
 
