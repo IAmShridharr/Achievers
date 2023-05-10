@@ -1,14 +1,9 @@
 package com.infiniterealm.achievers.admins.mainFragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,7 +21,6 @@ import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.admins.activities.AddStudentActivity;
 import com.infiniterealm.achievers.admins.adapters.StudentAdapter;
 import com.infiniterealm.achievers.admins.models.StudentListItemModel;
-import com.infiniterealm.achievers.students.mainFragments.HomeFragment;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -88,9 +82,6 @@ public class AdminProfileFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_admin_profile, container, false);
 
         addStudent = rootView.findViewById(R.id.addStudent);
-
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
 
         studentList = rootView.findViewById(R.id.studentsList);
         studentList.setLayoutManager(new LinearLayoutManager(getContext()));
