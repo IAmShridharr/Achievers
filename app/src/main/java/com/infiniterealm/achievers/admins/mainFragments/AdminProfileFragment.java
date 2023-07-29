@@ -2,23 +2,29 @@ package com.infiniterealm.achievers.admins.mainFragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.firebase.ui.database.FirebaseRecyclerOptions;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.admins.activities.AddStudentActivity;
-import com.infiniterealm.achievers.admins.adapters.StudentAdapter;
+import com.infiniterealm.achievers.admins.adapters.StudentsAdapter;
 import com.infiniterealm.achievers.admins.models.StudentListItemModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,7 +35,7 @@ public class AdminProfileFragment extends Fragment {
 
     View rootView;
     RecyclerView studentList;
-    StudentAdapter studentAdapter;
+    StudentsAdapter studentsAdapter;
 
     Button addStudent;
 
@@ -84,23 +90,12 @@ public class AdminProfileFragment extends Fragment {
         studentList = rootView.findViewById(R.id.studentsList);
         studentList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("students");
-
-        FirebaseRecyclerOptions<StudentListItemModel> options =
-                new FirebaseRecyclerOptions.Builder<StudentListItemModel>()
-                        .setQuery(query, StudentListItemModel.class)
-                        .build();
-
-        studentAdapter = new StudentAdapter(options, requireContext());
-        studentList.setAdapter(studentAdapter);
+        setUpRecyclerView();
 
         addStudent.setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), AddStudentActivity.class);
             startActivity(intent);
         });
-
 
         return rootView;
     }
@@ -109,47 +104,51 @@ public class AdminProfileFragment extends Fragment {
         studentList = rootView.findViewById(R.id.studentsList);
         studentList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("students");
+        // Get a reference to the "students" node in the database
+        DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference().child("students");
 
-        FirebaseRecyclerOptions<StudentListItemModel> options =
-                new FirebaseRecyclerOptions.Builder<StudentListItemModel>()
-                        .setQuery(query, StudentListItemModel.class)
-                        .build();
+        // Fetch all the students
+        studentsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
 
-        studentAdapter = new StudentAdapter(options, requireContext());
-        studentList.setAdapter(studentAdapter);
-    }
+                // Create a list to hold the students
+                List<StudentListItemModel> studentsList = new ArrayList<>();
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        studentAdapter.startListening();
-    }
+                // Loop through the children nodes (i.e., "5th Standard", "7th Standard", etc.)
+                for (DataSnapshot standardSnapshot : dataSnapshot.getChildren()) {
+                    // Loop through the students within each standard
+                    for (DataSnapshot studentSnapshot : standardSnapshot.getChildren()) {
+                        // Get the student object using the Student class
+                        StudentListItemModel student = studentSnapshot.getValue(StudentListItemModel.class);
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        studentAdapter.stopListening();
-    }
+                        // Add the student to the list if it's not null
+                        if (student != null) {
+                            studentsList.add(student);
+                        }
+                    }
+                }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        studentAdapter.stopListening();
+                // Initialize the RecyclerView and the Adapter
+                studentList.setLayoutManager(new LinearLayoutManager(getContext()));
+                studentsAdapter = new StudentsAdapter(getContext(), studentsList);
+                studentList.setAdapter(studentsAdapter);
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle errors that occur while retrieving data
+                Log.e("Student Data", "Error fetching students: " + databaseError.getMessage());
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         setUpRecyclerView();
-        studentAdapter.startListening();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        studentAdapter.stopListening();
     }
 }

@@ -1,10 +1,9 @@
 package com.infiniterealm.achievers.admins.adapters;
 
+import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -15,7 +14,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.Manifest;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -24,35 +22,38 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.admins.activities.EditStudentProfilesActivity;
-import com.infiniterealm.achievers.admins.mainFragments.AdminProfileFragment;
 import com.infiniterealm.achievers.admins.models.StudentListItemModel;
-import com.infiniterealm.achievers.students.activities.EditProfileActivity;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
-public class StudentAdapter extends FirebaseRecyclerAdapter<StudentListItemModel, StudentAdapter.StudentViewHolder> {
-    Context context;
+public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.StudentViewHolder> {
+
+    private Context context;
+    private List<StudentListItemModel> studentsList;
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 1;
 
-    /**
-     * Initialize a {@link RecyclerView.Adapter} that listens to a Firebase query. See
-     * {@link FirebaseRecyclerOptions} for configuration options.
-     *
-     * @param options
-     */
-    public StudentAdapter(@NonNull FirebaseRecyclerOptions<StudentListItemModel> options, Context context) {
-        super(options);
+    public StudentsAdapter(Context context, List<StudentListItemModel> studentsList) {
         this.context = context;
+        this.studentsList = studentsList;
+    }
+
+    @NonNull
+    @Override
+    public StudentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.student_item, parent, false);
+        return new StudentViewHolder(view);
     }
 
     @Override
-    protected void onBindViewHolder(@NonNull StudentViewHolder holder, int position, @NonNull StudentListItemModel model) {
+    public void onBindViewHolder(@NonNull StudentViewHolder holder, int position) {
+        StudentListItemModel model = studentsList.get(position);
 
+        // Bind the student data to the ViewHolder views
         if (!model.getName().isEmpty() || !model.getName().equals("")) {
             holder.studentName.setVisibility(View.VISIBLE);
             holder.studentName.setText(model.getName());
@@ -91,48 +92,49 @@ public class StudentAdapter extends FirebaseRecyclerAdapter<StudentListItemModel
 
         holder.details.setOnClickListener(view -> {
             Intent intent = new Intent(context, EditStudentProfilesActivity.class);
+            intent.putExtra("id", model.getId());
             context.startActivity(intent);
         });
 
-        holder.whatsapp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String phoneNumberWithCountryCode = model.getPhone();
-                String message = "Hello, " + model.getName() + "!";
+        holder.whatsapp.setOnClickListener(view -> {
+            String phoneNumberWithCountryCode = model.getPhone();
+            String message = "Hello, " + model.getName() + "!";
 
-                try {
-                    PackageManager packageManager = context.getPackageManager();
-                    Intent i = new Intent(Intent.ACTION_VIEW);
+            try {
+                PackageManager packageManager = context.getPackageManager();
 
-                    String url = "https://api.whatsapp.com/send?phone=" + phoneNumberWithCountryCode + "&text=" + URLEncoder.encode(message, "UTF-8");
-                    i.setPackage("com.whatsapp");
-                    i.setData(Uri.parse(url));
+                String url = "https://api.whatsapp.com/send?phone=" + phoneNumberWithCountryCode + "&text=" + URLEncoder.encode(message, "UTF-8");
 
-                    if (i.resolveActivity(packageManager) != null) {
-                        context.startActivity(i);
-                    } else {
-                        Snackbar snackbar = Snackbar.make(holder.studentProfileImage, "WhatsApp not Installed!", Snackbar.LENGTH_LONG);
-                        snackbar.show();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Snackbar snackbar = Snackbar.make(holder.studentProfileImage, "WhatsApp not Installed!", Snackbar.LENGTH_LONG);
-                    snackbar.show();
+                Intent whatsappIntent = new Intent(Intent.ACTION_VIEW);
+                whatsappIntent.setData(Uri.parse(url));
+                whatsappIntent.setPackage("com.whatsapp");
+
+                Intent whatsappBusinessIntent = new Intent(Intent.ACTION_VIEW);
+                whatsappBusinessIntent.setData(Uri.parse(url));
+                whatsappBusinessIntent.setPackage("com.whatsapp.w4b");
+
+                if (whatsappBusinessIntent.resolveActivity(packageManager) != null) {
+                    context.startActivity(whatsappBusinessIntent);
+                } else {
+                    showSnackBar(view, "App not Installed!");
                 }
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                showSnackBar(view, "Failed to send message!");
+            } catch (Exception e) {
+                e.printStackTrace();
+                showSnackBar(view, "Something went wrong...!");
             }
         });
 
     }
 
-    @NonNull
     @Override
-    public StudentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.student_item, parent, false);
-        return new StudentViewHolder(view);
+    public int getItemCount() {
+        return studentsList.size();
     }
 
     public static class StudentViewHolder extends RecyclerView.ViewHolder {
-
         ImageView studentProfileImage;
         TextView studentName, studentRollNumber;
         ImageButton call, whatsapp;
@@ -154,4 +156,8 @@ public class StudentAdapter extends FirebaseRecyclerAdapter<StudentListItemModel
         }
     }
 
+    private void showSnackBar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
 }

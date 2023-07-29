@@ -1,17 +1,14 @@
 package com.infiniterealm.achievers.admins.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -48,46 +45,87 @@ public class AddStudentActivity extends AppCompatActivity {
 
             String Name = name.getText().toString();
             String iD = ID.getText().toString();
+            String std = iD.substring(0, 1);
+            String standard;
+            switch (std) {
+                case "J":
+                    standard = "Jr. KG";
+                    break;
+                case "S":
+                    standard = "Sr. KG";
+                    break;
+                case "1":
+                    standard = "1st Standard";
+                    break;
+                case "2":
+                    standard = "2nd Standard";
+                    break;
+                case "3":
+                    standard = "3rd Standard";
+                    break;
+                case "4":
+                    standard = "4th Standard";
+                    break;
+                case "5":
+                    standard = "5th Standard";
+                    break;
+                case "6":
+                    standard = "6th Standard";
+                    break;
+                case "7":
+                    standard = "7th Standard";
+                    break;
+                case "8":
+                    standard = "8th Standard";
+                    break;
+                case "9":
+                    standard = "9th Standard";
+                    break;
+                case "X":
+                    standard = "10th Standard";
+                    break;
+                default:
+                    standard = "Pre-School";
+                    break;
+            }
             String Email = email.getText().toString();
             String Password = password.getText().toString();
             final String[] UID = new String[1];
 
             if (Name.isEmpty() || iD.isEmpty() || Email.isEmpty() || Password.isEmpty()) {
-                Snackbar snackbar = Snackbar.make(layout, "All fields are required!", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                showSnackBar(view, "All fields are required!");
             } else {
                 FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            UID[0] = Objects.requireNonNull(task.getResult().getUser()).getUid();
-                            StudentSignUpHelper studentSignUpHelper = new StudentSignUpHelper(Name, iD, Email, Password);
-                            databaseReference.child(UID[0]).setValue(studentSignUpHelper);
-                            databaseReference.child(UID[0]).child("profileImageUrl").setValue("");
-                            databaseReference.child(UID[0]).child("phone").setValue("");
-                            databaseReference.child(UID[0]).child("parentPhone").setValue("");
-                            databaseReference.child(UID[0]).child("dob").setValue("");
-                            databaseReference.child(UID[0]).child("school").setValue("");
-                            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("roles");
-                            ref.child("students").child(UID[0]).setValue(true);
+                mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        UID[0] = Objects.requireNonNull(task.getResult().getUser()).getUid();
+                        StudentSignUpHelper studentSignUpHelper = new StudentSignUpHelper(Name, iD, Email, Password);
+                        databaseReference.child(standard).child(iD).setValue(studentSignUpHelper);
+                        databaseReference.child(standard).child(iD).child("UID").setValue(UID[0]);
+                        databaseReference.child(standard).child(iD).child("profileImageUrl").setValue("");
+                        databaseReference.child(standard).child(iD).child("phone").setValue("");
+                        databaseReference.child(standard).child(iD).child("parentPhone").setValue("");
+                        databaseReference.child(standard).child(iD).child("DOB").setValue("");
+                        databaseReference.child(standard).child(iD).child("school").setValue("");
+                        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("roles");
+                        ref.child("students").child(UID[0]).setValue(true);
 
-                            name.setText(null);
-                            ID.setText(null);
-                            email.setText(null);
-                            password.setText(null);
+                        name.setText(null);
+                        ID.setText(null);
+                        email.setText(null);
+                        password.setText(null);
 
-                            Snackbar snackbar = Snackbar
-                                    .make(layout, "Student Added Successfully!", Snackbar.LENGTH_LONG);
-                            snackbar.show();
-                        } else {
-                            Snackbar snackbar = Snackbar
-                                    .make(layout, "Student Could Not Be Added!", Snackbar.LENGTH_LONG);
-                            snackbar.show();
-                        }
+                        showSnackBar(view, "Student Added Successfully!");
+                    } else {
+                        showSnackBar(view, "Student Could Not Be Added!");
                     }
                 });
             }
         });
+    }
+
+    private void showSnackBar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 }

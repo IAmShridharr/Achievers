@@ -13,7 +13,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
             // Internet is active
         } else {
             // Internet is inactive
-
         }
     }
 

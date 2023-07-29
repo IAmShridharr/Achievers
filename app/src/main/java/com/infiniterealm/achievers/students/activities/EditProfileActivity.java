@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +62,6 @@ public class EditProfileActivity extends AppCompatActivity {
         student = mAuth.getCurrentUser();
         assert student != null;
         uid = student.getUid();
-        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(uid);
         FirebaseStorage storage = FirebaseStorage.getInstance();
         profileImageRef = storage.getReference().child("students/profile_pictures/" + uid);
 
@@ -182,6 +182,57 @@ public class EditProfileActivity extends AppCompatActivity {
     }
         public void showData() {
         progressBar.setVisibility(View.VISIBLE);
+
+
+            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+
+            String ID = sharedPreferences.getString("id", "A001");
+            String std = ID.substring(0,1);
+            String standard;
+            switch (std) {
+                case "J":
+                    standard = "Jr. KG";
+                    break;
+                case "S":
+                    standard = "Sr. KG";
+                    break;
+                case "1":
+                    standard = "1st Standard";
+                    break;
+                case "2":
+                    standard = "2nd Standard";
+                    break;
+                case "3":
+                    standard = "3rd Standard";
+                    break;
+                case "4":
+                    standard = "4th Standard";
+                    break;
+                case "5":
+                    standard = "5th Standard";
+                    break;
+                case "6":
+                    standard = "6th Standard";
+                    break;
+                case "7":
+                    standard = "7th Standard";
+                    break;
+                case "8":
+                    standard = "8th Standard";
+                    break;
+                case "9":
+                    standard = "9th Standard";
+                    break;
+                case "X":
+                    standard = "10th Standard";
+                    break;
+                default:
+                    standard = "Pre-School";
+                    break;
+            }
+
+            mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID);
+
         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -191,7 +242,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 Email = snapshot.child("email").getValue(String.class);
                 Phone = snapshot.child("phone").getValue(String.class);
                 ParentPhone = snapshot.child("parentPhone").getValue(String.class);
-                DOB = snapshot.child("dob").getValue(String.class);
+                DOB = snapshot.child("DOB").getValue(String.class);
                 School = snapshot.child("school").getValue(String.class);
 
                 if (DP == null || DP.equals("")) {
@@ -280,7 +331,7 @@ public class EditProfileActivity extends AppCompatActivity {
     public boolean isDOBChanged() {
         if (!DOB.equals(Objects.requireNonNull(dobInput.getText()).toString())) {
             if (dobInput.getText().toString().length() == 10 || dobInput.getText().toString().equals("")) {
-                mDbRef.child("dob").setValue(dobInput.getText().toString());
+                mDbRef.child("DOB").setValue(dobInput.getText().toString());
                 DOB = dobInput.getText().toString();
                 return true;
             }

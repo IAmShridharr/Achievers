@@ -1,6 +1,9 @@
 package com.infiniterealm.achievers.students.mainFragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -115,17 +118,65 @@ public class ProfileFragment extends Fragment {
         dobLayout = rootView.findViewById(R.id.dob_layout);
         schoolLayout = rootView.findViewById(R.id.school_layout);
 
-        mDbRef = FirebaseDatabase.getInstance().getReference("students");
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         assert user != null;
         uid = user.getUid();
 
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+
+        String ID = sharedPreferences.getString("id", "A001");
+        String std = ID.substring(0,1);
+        String standard;
+        switch (std) {
+            case "J":
+                standard = "Jr. KG";
+                break;
+            case "S":
+                standard = "Sr. KG";
+                break;
+            case "1":
+                standard = "1st Standard";
+                break;
+            case "2":
+                standard = "2nd Standard";
+                break;
+            case "3":
+                standard = "3rd Standard";
+                break;
+            case "4":
+                standard = "4th Standard";
+                break;
+            case "5":
+                standard = "5th Standard";
+                break;
+            case "6":
+                standard = "6th Standard";
+                break;
+            case "7":
+                standard = "7th Standard";
+                break;
+            case "8":
+                standard = "8th Standard";
+                break;
+            case "9":
+                standard = "9th Standard";
+                break;
+            case "X":
+                standard = "10th Standard";
+                break;
+            default:
+                standard = "Pre-School";
+                break;
+        }
+
+        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID);
+
         if (!uid.isEmpty()) {
             getStudentData();
         }
 
-        rootView.findViewById(R.id.edit_profile).setOnClickListener(view -> {
+        rootView.findViewById(R.id.follow).setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), EditProfileActivity.class);
             startActivity(intent);
         });
@@ -166,14 +217,14 @@ public class ProfileFragment extends Fragment {
         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String DP = snapshot.child(uid).child("profileImageUrl").getValue(String.class);
-                String Name = snapshot.child(uid).child("name").getValue(String.class);
-                String Email = snapshot.child(uid).child("email").getValue(String.class);
-                String RollNumber = snapshot.child(uid).child("id").getValue(String.class);
-                String Phone = snapshot.child(uid).child("phone").getValue(String.class);
-                String ParentPhone = snapshot.child(uid).child("parentPhone").getValue(String.class);
-                String DOB = snapshot.child(uid).child("dob").getValue(String.class);
-                String School = snapshot.child(uid).child("school").getValue(String.class);
+                String DP = snapshot.child("profileImageUrl").getValue(String.class);
+                String Name = snapshot.child("name").getValue(String.class);
+                String Email = snapshot.child("email").getValue(String.class);
+                String RollNumber = snapshot.child("id").getValue(String.class);
+                String Phone = snapshot.child("phone").getValue(String.class);
+                String ParentPhone = snapshot.child("parentPhone").getValue(String.class);
+                String DOB = snapshot.child("DOB").getValue(String.class);
+                String School = snapshot.child("school").getValue(String.class);
 
                 if (DP == null || DP.equals("")) {
                     profileImage.setImageResource(R.drawable.profile_picture_placeholder);

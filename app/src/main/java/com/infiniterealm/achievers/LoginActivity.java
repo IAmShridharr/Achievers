@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDbRef;
+    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,9 +77,7 @@ public class LoginActivity extends AppCompatActivity {
             } else {
                 progressBar.setVisibility(View.GONE);
 
-                Snackbar snackbar = Snackbar
-                        .make(layout, "All Fields Are Required", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                showSnackBar(layout, "All Fields Are Required");
             }
         });
 
@@ -86,21 +85,15 @@ public class LoginActivity extends AppCompatActivity {
             String email = Objects.requireNonNull(loginID.getText()).toString().trim();
 
             if (TextUtils.isEmpty(email)) {
-                Snackbar snackbar = Snackbar
-                        .make(layout, "Please enter your email", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                showSnackBar(layout, "Please enter your email");
                 return;
             }
 
             FirebaseAuth.getInstance().sendPasswordResetEmail(email).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Snackbar snackbar = Snackbar
-                            .make(layout, "Password reset email has been sent to your email", Snackbar.LENGTH_LONG);
-                    snackbar.show();
+                    showSnackBar(layout, "Password reset email has been sent to your email");
                 } else {
-                    Snackbar snackbar = Snackbar
-                            .make(layout, "Failed to send reset email. Please try again", Snackbar.LENGTH_LONG);
-                    snackbar.show();
+                    showSnackBar(layout, "Failed to send reset email. Please try again");
                 }
             });
         });
@@ -108,9 +101,50 @@ public class LoginActivity extends AppCompatActivity {
 
     public void StudentLogin() {
         String rollNumber = Objects.requireNonNull(loginID.getText()).toString();
+        String std = rollNumber.substring(0, 1);
         String password = Objects.requireNonNull(Password.getText()).toString();
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("students");
+        switch (std) {
+            case "J":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("Jr. KG");
+                break;
+            case "S":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("Sr. KG");
+                break;
+            case "1":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("1st Standard");
+                break;
+            case "2":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("2nd Standard");
+                break;
+            case "3":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("3rd Standard");
+                break;
+            case "4":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("4th Standard");
+                break;
+            case "5":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("5th Standard");
+                break;
+            case "6":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("6th Standard");
+                break;
+            case "7":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("7th Standard");
+                break;
+            case "8":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("8th Standard");
+                break;
+            case "9":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("9th Standard");
+                break;
+            case "X":
+                reference = FirebaseDatabase.getInstance().getReference("students").child("10th Standard");
+                break;
+            default:
+                reference = FirebaseDatabase.getInstance().getReference("students").child("Pre-School");
+                break;
+        }
 
         Query query = reference.orderByChild("id").equalTo(rollNumber);
 
@@ -153,30 +187,20 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onCancelled(@NonNull DatabaseError error) {
                                         // Handle error case
                                         // display an error message to the user
-                                        Snackbar snackbar = Snackbar
-                                                .make(layout, "Error retrieving data from database", Snackbar.LENGTH_LONG);
-                                        snackbar.show();
+                                        showSnackBar(layout, "Error retrieving data from database");
                                     }
                                 });
                             } else {
                                 progressBar.setVisibility(View.GONE);
                                 // If sign in fails, display a message to the user.
                                 if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
-                                    Snackbar snackbar = Snackbar
-                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(66), Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(66));
                                 } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
-                                    Snackbar snackbar = Snackbar
-                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(59), Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(59));
                                 } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
-                                    Snackbar snackbar = Snackbar
-                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141), Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141));
                                 } else {
-                                    Snackbar snackbar = Snackbar
-                                            .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                    showSnackBar(layout, "Something went wrong!");
                                 }
                             }
                         });
@@ -212,11 +236,11 @@ public class LoginActivity extends AppCompatActivity {
                     loginID.setError(null);
                     DataSnapshot firstChild = snapshot.getChildren().iterator().next();
                     String passwordFromDB = firstChild.child("password").getValue(String.class);
+                    assert passwordFromDB != null;
                     Log.d(TAG, passwordFromDB);
                     if (password.equals(passwordFromDB)) {
                         Password.setError(null);
                         String email = firstChild.child("email").getValue(String.class);
-                        Log.d(TAG, email);
 
                         mAuth = FirebaseAuth.getInstance();
                         mDbRef = FirebaseDatabase.getInstance().getReference();
@@ -254,21 +278,13 @@ public class LoginActivity extends AppCompatActivity {
                                 progressBar.setVisibility(View.GONE);
                                 // If sign in fails, display a message to the user.
                                 if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
-                                    Snackbar snackbar = Snackbar
-                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(66), Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(66));
                                 } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
-                                    Snackbar snackbar = Snackbar
-                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(59), Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(59));
                                 } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
-                                    Snackbar snackbar = Snackbar
-                                            .make(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141), Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141));
                                 } else {
-                                    Snackbar snackbar = Snackbar
-                                            .make(layout, "Something went wrong!", Snackbar.LENGTH_LONG);
-                                    snackbar.show();
+                                    showSnackBar(layout, "Something went wrong!");
                                 }
                             }
                         });
@@ -287,5 +303,10 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void showSnackBar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 }

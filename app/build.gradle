@@ -32,13 +32,13 @@ android {
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "com.airbnb.android:lottie:6.0.0"
-    implementation 'com.google.android.material:material:1.8.0'
+    implementation 'com.google.android.material:material:1.9.0'
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation 'com.google.firebase:firebase-analytics'
-    implementation 'com.google.firebase:firebase-auth:21.3.0'
+    implementation 'com.google.firebase:firebase-auth:22.1.0'
 
     // Import the BoM for the Firebase platform
     implementation platform('com.google.firebase:firebase-bom:31.2.3')
@@ -48,9 +48,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth'
 
     // Also add the dependency for the Google Play services library and specify its version
-    implementation 'com.google.android.gms:play-services-auth:20.5.0'
-    implementation 'com.google.firebase:firebase-database:20.2.0'
-    implementation 'com.google.firebase:firebase-storage:20.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.6.0'
+    implementation 'com.google.firebase:firebase-database:20.2.2'
+    implementation 'com.google.firebase:firebase-storage:20.2.1'
 
     implementation 'com.afollestad.material-dialogs:bottomsheets:3.3.0'
 

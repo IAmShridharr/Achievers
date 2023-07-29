@@ -54,4 +54,6 @@
     <string name="whatsapp_button">WhatsApp Button</string>
     <string name="call_button">Call Button</string>
     <string name="delete_image">Delete Image</string>
+    <string name="search">Search</string>
+    <string name="follow">Follow</string>
 </resources>

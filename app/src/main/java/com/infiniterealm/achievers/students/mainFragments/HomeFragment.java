@@ -1,20 +1,25 @@
 package com.infiniterealm.achievers.students.mainFragments;
 
-import static android.content.ContentValues.TAG;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -22,8 +27,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.LoginActivity;
+import com.infiniterealm.achievers.R;
+import com.infiniterealm.achievers.students.activities.StudentProfileActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,8 +46,12 @@ public class HomeFragment extends Fragment {
     SharedPreferences sharedPreferences;
     View rootView;
     FirebaseAuth mAuth;
+    EditText search;
     FirebaseUser user;
     DatabaseReference mDbRef;
+    private List<String> itemList = new ArrayList<>();
+    private List<String> originalItemList = new ArrayList<>();
+    private ArrayAdapter<String> adapter;
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -85,16 +98,102 @@ public class HomeFragment extends Fragment {
         sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        mDbRef = FirebaseDatabase.getInstance().getReference("students");
 
-        mDbRef.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        String ID = sharedPreferences.getString("id", "A001");
+        String std = ID.substring(0,1);
+        Log.d("Class", std);
+        String standard;
+        switch (std) {
+            case "J":
+                standard = "Jr. KG";
+                break;
+            case "S":
+                standard = "Sr. KG";
+                break;
+            case "1":
+                standard = "1st Standard";
+                break;
+            case "2":
+                standard = "2nd Standard";
+                break;
+            case "3":
+                standard = "3rd Standard";
+                break;
+            case "4":
+                standard = "4th Standard";
+                break;
+            case "5":
+                standard = "5th Standard";
+                break;
+            case "6":
+                standard = "6th Standard";
+                break;
+            case "7":
+                standard = "7th Standard";
+                break;
+            case "8":
+                standard = "8th Standard";
+                break;
+            case "9":
+                standard = "9th Standard";
+                break;
+            case "X":
+                standard = "10th Standard";
+                break;
+            default:
+                standard = "Pre-School";
+                break;
+        }
+
+        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID);
+        search = rootView.findViewById(R.id.input_search);
+
+        // Initialize the ListView and Adapter
+        ListView listView = rootView.findViewById(R.id.searchItemList);
+        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, itemList);
+        listView.setAdapter(adapter);
+
+        DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference("students");
+        studentsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // Clear the itemList to avoid duplicate entries
+                itemList.clear();
+
+                // Loop through the children nodes (i.e., "5th Standard", "7th Standard", etc.)
+                for (DataSnapshot standardSnapshot : dataSnapshot.getChildren()) {
+                    // Loop through the students within each standard
+                    for (DataSnapshot studentSnapshot : standardSnapshot.getChildren()) {
+                        // Assuming each student node has a "name" field
+                        String name = studentSnapshot.child("name").getValue(String.class);
+                        String rollNumber = studentSnapshot.child("id").getValue(String.class);
+                        if (name != null) {
+                            itemList.add(name + ": " + rollNumber);
+
+                            // Copy the contents of itemList to originalItemList
+                            originalItemList.add(name + ": " + rollNumber);
+                        }
+                    }
+                }
+
+                // Update the adapter to reflect the new data
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle any errors that may occur while fetching data
+
+            }
+        });
+
+        mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String name = dataSnapshot.child("name").getValue(String.class);
                 String roll = dataSnapshot.child("id").getValue(String.class);
+
                 // Use the retrieved name value as needed
-                Log.d(TAG, name);
-                Log.d(TAG, roll);
             }
 
             @Override
@@ -103,21 +202,93 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        rootView.findViewById(R.id.logout).setOnClickListener(new View.OnClickListener() {
+        // Set OnItemClickListener for the ListView
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                // Get the clicked item from the adapter
+                String clickedItem = adapter.getItem(position);
+                assert clickedItem != null;
+                String Name = clickedItem.substring(0, clickedItem.length()-6);
+                String ID = clickedItem.substring(clickedItem.length()-4);
+                itemList.clear();
+                adapter.notifyDataSetChanged();
+
+                Intent intent = new Intent(requireContext(), StudentProfileActivity.class);
+                intent.putExtra("name", Name);
+                intent.putExtra("ID", ID);
+                startActivity(intent);
+            }
+        });
+
+        search.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                // Get the entered text from the search EditText
+                String searchText = charSequence.toString().trim();
+
+                // Clear the itemList to avoid duplicate entries
+                itemList.clear();
+
+                // If the search text is empty, show the hint
+                if (searchText.isEmpty()) {
+                    search.setHint("for your Classmates, Friends etc.");
+                    // Add all original data to the itemList
+                    itemList.addAll(originalItemList);
+
+                    listView.setVisibility(View.GONE);
+                } else {
+                    listView.setVisibility(View.VISIBLE);
+                    // If search text is not empty, filter data based on the search text
+                    for (String name : originalItemList) {
+                        if (name.toLowerCase().contains(searchText.toLowerCase())) {
+                            itemList.add(name);
+                        }
+                    }
+                }
+
+                // Update the adapter to reflect the new data
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        rootView.findViewById(R.id.input_search).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                search.setHint("for your Classmates, Friends etc.");
+            }
+        });
+
+        rootView.findViewById(R.id.studentLogout).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.clear();
                 editor.apply();
-
+                //Your code
                 mAuth.signOut();
-
                 Intent intent = new Intent(getContext(), LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
                 requireActivity().finish();
             }
         });
+
         return rootView;
+    }
+
+    private void showSnackBar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 }

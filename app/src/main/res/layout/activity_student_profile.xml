@@ -2,13 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/studentProfilePage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    tools:context=".students.mainFragments.ProfileFragment">
+    tools:context=".students.activities.StudentProfileActivity">
 
     <ScrollView
-        android:id="@+id/profile_scroll"
+        android:id="@+id/profile_page_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -16,19 +16,10 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/profile_layout"
+            android:id="@+id/profile_page_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:text="@string/your_profile"
-                android:textSize="24sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -297,7 +288,7 @@
                     android:layout_gravity="center"
                     android:layout_marginEnd="5dp"
                     android:layout_weight="1"
-                    android:text="@string/edit"
+                    android:text="@string/follow"
                     app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraSmall" />
 
                 <com.google.android.material.button.MaterialButton
@@ -315,4 +306,5 @@
 
         </LinearLayout>
     </ScrollView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

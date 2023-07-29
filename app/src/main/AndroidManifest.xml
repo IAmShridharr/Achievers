@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <queries>
         <package android:name="com.whatsapp" />
@@ -25,6 +26,9 @@
         android:theme="@style/Theme.Achievers"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".students.activities.StudentProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".admins.activities.EditStudentProfilesActivity"
             android:exported="false" />
