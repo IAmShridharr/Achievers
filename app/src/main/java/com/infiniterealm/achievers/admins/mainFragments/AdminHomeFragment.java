@@ -94,7 +94,9 @@ public class AdminHomeFragment extends Fragment {
                 String name = dataSnapshot.child("name").getValue(String.class);
                 String pass = dataSnapshot.child("id").getValue(String.class);
                 // Use the retrieved name value as needed
+                assert name != null;
                 Log.d(TAG, name);
+                assert pass != null;
                 Log.d(TAG, pass);
             }
 

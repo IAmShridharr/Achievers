@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
+    android:padding="10dp"
     tools:context=".students.mainFragments.ProfileFragment">
 
     <ScrollView
@@ -21,14 +21,32 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/textView2"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:weightSum="20"
                 android:layout_marginBottom="10dp"
-                android:gravity="center"
-                android:text="@string/your_profile"
-                android:textSize="24sp" />
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:layout_weight="19"
+                    android:text="@string/your_profile"
+                    android:textSize="24sp" />
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:src="@drawable/baseline_more_vert_24"
+                    android:contentDescription="@string/menu_three_dots_vertical" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

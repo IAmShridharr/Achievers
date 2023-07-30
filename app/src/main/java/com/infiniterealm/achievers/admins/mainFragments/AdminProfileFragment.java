@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,6 +26,7 @@ import com.infiniterealm.achievers.admins.models.StudentListItemModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -121,12 +123,16 @@ public class AdminProfileFragment extends Fragment {
                 for (DataSnapshot standardSnapshot : dataSnapshot.getChildren()) {
                     // Loop through the students within each standard
                     for (DataSnapshot studentSnapshot : standardSnapshot.getChildren()) {
-                        // Get the student object using the Student class
-                        StudentListItemModel student = studentSnapshot.getValue(StudentListItemModel.class);
-
-                        // Add the student to the list if it's not null
-                        if (student != null) {
-                            studentsList.add(student);
+                        // Loop through the profile information within each student
+                        for (DataSnapshot profileSnapshot : studentSnapshot.getChildren()) {
+                            if (studentSnapshot.hasChild("Profile Information")) {
+                                // Get the student object using the Student class
+                                StudentListItemModel student = profileSnapshot.getValue(StudentListItemModel.class);
+                                // Add the student to the list if it's not null
+                                if (student != null) {
+                                    studentsList.add(student);
+                                }
+                            }
                         }
                     }
                 }
@@ -144,6 +150,11 @@ public class AdminProfileFragment extends Fragment {
                 Log.e("Student Data", "Error fetching students: " + databaseError.getMessage());
             }
         });
+    }
+
+    private void showSnackBar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+        snackbar.show();
     }
 
     @Override

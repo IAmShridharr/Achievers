@@ -29,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.LoginActivity;
 import com.infiniterealm.achievers.R;
+import com.infiniterealm.achievers.admins.models.StudentListItemModel;
 import com.infiniterealm.achievers.students.activities.StudentProfileActivity;
 
 import java.util.ArrayList;
@@ -164,14 +165,19 @@ public class HomeFragment extends Fragment {
                 for (DataSnapshot standardSnapshot : dataSnapshot.getChildren()) {
                     // Loop through the students within each standard
                     for (DataSnapshot studentSnapshot : standardSnapshot.getChildren()) {
-                        // Assuming each student node has a "name" field
-                        String name = studentSnapshot.child("name").getValue(String.class);
-                        String rollNumber = studentSnapshot.child("id").getValue(String.class);
-                        if (name != null) {
-                            itemList.add(name + ": " + rollNumber);
+                        // Loop through the profile information within each student
+                        for (DataSnapshot profileSnapshot : studentSnapshot.getChildren()) {
+                            if (studentSnapshot.hasChild("Profile Information")) {
+                                // Assuming each student node has a "name" field
+                                String name = studentSnapshot.child("name").getValue(String.class);
+                                String rollNumber = studentSnapshot.child("id").getValue(String.class);
+                                if (name != null) {
+                                    itemList.add(name + ": " + rollNumber);
 
-                            // Copy the contents of itemList to originalItemList
-                            originalItemList.add(name + ": " + rollNumber);
+                                    // Copy the contents of itemList to originalItemList
+                                    originalItemList.add(name + ": " + rollNumber);
+                                }
+                            }
                         }
                     }
                 }

@@ -170,7 +170,7 @@ public class ProfileFragment extends Fragment {
                 break;
         }
 
-        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID);
+        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID).child("Profile Information");
 
         if (!uid.isEmpty()) {
             getStudentData();

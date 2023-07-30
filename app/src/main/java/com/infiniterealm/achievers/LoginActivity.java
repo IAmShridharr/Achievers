@@ -146,7 +146,8 @@ public class LoginActivity extends AppCompatActivity {
                 break;
         }
 
-        Query query = reference.orderByChild("id").equalTo(rollNumber);
+//        Query query = reference.orderByChild("id").equalTo(rollNumber);
+        Query query = reference.orderByKey().equalTo(rollNumber);
 
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -154,61 +155,73 @@ public class LoginActivity extends AppCompatActivity {
                 if (snapshot.exists()) {
                     loginID.setError(null);
                     DataSnapshot firstChild = snapshot.getChildren().iterator().next();
-                    String passwordFromDB = firstChild.child("password").getValue(String.class);
-                    if (password.equals(passwordFromDB)) {
-                        Password.setError(null);
-                        String email = firstChild.child("email").getValue(String.class);
 
-                        mAuth = FirebaseAuth.getInstance();
-                        mDbRef = FirebaseDatabase.getInstance().getReference();
+                    reference.child(Objects.requireNonNull(firstChild.getKey())).child("Profile Information").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String passwordFromDB = snapshot.child("password").getValue(String.class);
+                            if (password.equals(passwordFromDB)) {
+                                Password.setError(null);
+                                String email = snapshot.child("email").getValue(String.class);
 
-                        assert email != null;
-                        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                progressBar.setVisibility(View.GONE);
-                                // Sign in success, update UI with the signed-in user's information
-                                mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        // Save the user's login status
-                                        SharedPreferences.Editor editor = mPrefs.edit();
-                                        editor.putBoolean("isLoggedIn", true);
-                                        editor.putString("email", email);
-                                        editor.putString("password", password);
-                                        editor.putString("id", rollNumber);
-                                        editor.apply();
+                                mAuth = FirebaseAuth.getInstance();
+                                mDbRef = FirebaseDatabase.getInstance().getReference();
 
-                                        Intent intent = new Intent(LoginActivity.this, StudentActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
+                                assert email != null;
+                                mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                                    if (task.isSuccessful()) {
+                                        progressBar.setVisibility(View.GONE);
+                                        // Sign in success, update UI with the signed-in user's information
+                                        mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                // Save the user's login status
+                                                SharedPreferences.Editor editor = mPrefs.edit();
+                                                editor.putBoolean("isLoggedIn", true);
+                                                editor.putString("email", email);
+                                                editor.putString("password", password);
+                                                editor.putString("id", rollNumber);
+                                                editor.apply();
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        // Handle error case
-                                        // display an error message to the user
-                                        showSnackBar(layout, "Error retrieving data from database");
+                                                Intent intent = new Intent(LoginActivity.this, StudentActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                // Handle error case
+                                                // display an error message to the user
+                                                showSnackBar(layout, "Error retrieving data from database");
+                                            }
+                                        });
+                                    } else {
+                                        progressBar.setVisibility(View.GONE);
+                                        // If sign in fails, display a message to the user.
+                                        if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
+                                            showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(66));
+                                        } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
+                                            showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(59));
+                                        } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
+                                            showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141));
+                                        } else {
+                                            showSnackBar(layout, "Something went wrong!");
+                                        }
                                     }
                                 });
-                            } else {
-                                progressBar.setVisibility(View.GONE);
-                                // If sign in fails, display a message to the user.
-                                if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidCredentialsException")) {
-                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(66));
-                                } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.auth.FirebaseAuthInvalidUserException")) {
-                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(59));
-                                } else if (Objects.requireNonNull(task.getException()).toString().contains("com.google.firebase.FirebaseTooManyRequestsException")) {
-                                    showSnackBar(layout, Objects.requireNonNull(task.getException()).toString().substring(54, 141));
-                                } else {
-                                    showSnackBar(layout, "Something went wrong!");
-                                }
-                            }
-                        });
 
-                    } else {
-                        Password.setError("Invalid Password");
-                        Password.requestFocus();
-                    }
+                            } else {
+                                Password.setError("Invalid Password");
+                                Password.requestFocus();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
                 } else {
                     loginID.setError("Invalid Login ID");
                     loginID.requestFocus();

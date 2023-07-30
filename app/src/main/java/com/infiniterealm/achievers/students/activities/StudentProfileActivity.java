@@ -31,7 +31,6 @@ public class StudentProfileActivity extends AppCompatActivity {
     TextView name, rollNumber, email, phone, parentPhone, dob, school;
     ProgressBar progressBar;
     LinearLayout rollNumberLayout, emailLayout, phoneLayout, parentPhoneLayout, dobLayout, schoolLayout, profileLayout;
-    private ShapeableImageView profileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,7 @@ public class StudentProfileActivity extends AppCompatActivity {
         dob = findViewById(R.id.dob);
         school = findViewById(R.id.school);
 
-        profileImage = findViewById(R.id.profile_image);
+        ShapeableImageView profileImage = findViewById(R.id.profile_image);
 
         profileLayout = findViewById(R.id.profile_page_layout);
         emailLayout = findViewById(R.id.email_layout);

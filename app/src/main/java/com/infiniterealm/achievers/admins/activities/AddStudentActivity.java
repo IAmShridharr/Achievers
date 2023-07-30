@@ -100,13 +100,13 @@ public class AddStudentActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         UID[0] = Objects.requireNonNull(task.getResult().getUser()).getUid();
                         StudentSignUpHelper studentSignUpHelper = new StudentSignUpHelper(Name, iD, Email, Password);
-                        databaseReference.child(standard).child(iD).setValue(studentSignUpHelper);
-                        databaseReference.child(standard).child(iD).child("UID").setValue(UID[0]);
-                        databaseReference.child(standard).child(iD).child("profileImageUrl").setValue("");
-                        databaseReference.child(standard).child(iD).child("phone").setValue("");
-                        databaseReference.child(standard).child(iD).child("parentPhone").setValue("");
-                        databaseReference.child(standard).child(iD).child("DOB").setValue("");
-                        databaseReference.child(standard).child(iD).child("school").setValue("");
+                        databaseReference.child(standard).child(iD).child("Profile Information").setValue(studentSignUpHelper);
+                        databaseReference.child(standard).child(iD).child("Profile Information").child("UID").setValue(UID[0]);
+                        databaseReference.child(standard).child(iD).child("Profile Information").child("profileImageUrl").setValue("");
+                        databaseReference.child(standard).child(iD).child("Profile Information").child("phone").setValue("");
+                        databaseReference.child(standard).child(iD).child("Profile Information").child("parentPhone").setValue("");
+                        databaseReference.child(standard).child(iD).child("Profile Information").child("DOB").setValue("");
+                        databaseReference.child(standard).child(iD).child("Profile Information").child("school").setValue("");
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("roles");
                         ref.child("students").child(UID[0]).setValue(true);
 

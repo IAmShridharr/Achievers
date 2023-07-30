@@ -231,7 +231,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     break;
             }
 
-            mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID);
+            mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID).child("Profile Information");
 
         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
