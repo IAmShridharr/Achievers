@@ -127,6 +127,29 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/input_role_layout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/role"
+                android:maxWidth="488dp"
+                android:padding="10dp"
+                app:endIconMode="clear_text"
+                app:startIconContentDescription="Role Icon"
+                app:startIconDrawable="@drawable/baseline_person_24">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/input_role"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLength="7"
+                    android:textColorHint="#8D6E63"
+                    tools:ignore="TextContrastCheck" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
             <ProgressBar
                 android:id="@+id/progress"
                 android:layout_width="wrap_content"

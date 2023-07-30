@@ -39,9 +39,12 @@ import java.util.Objects;
 
 public class EditProfileActivity extends AppCompatActivity {
 
+    SharedPreferences sharedPreferences;
+    String ID;
+    String std;
+    String standard;
     private TextInputEditText name, rollNumber, email, dobInput, phone, parentPhone, school;
     private StorageReference profileImageRef;
-    private String uid;
     private DatabaseReference mDbRef;
     FirebaseUser student;
     private TextView addDP, removeDP;
@@ -56,14 +59,15 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
+        sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        ID = sharedPreferences.getString("id", "A001");
+        std = ID.substring(0,1);
+
         progressBar = findViewById(R.id.progressBar);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         student = mAuth.getCurrentUser();
-        assert student != null;
-        uid = student.getUid();
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        profileImageRef = storage.getReference().child("students/profile_pictures/" + uid);
 
         profileImage = findViewById(R.id.edit_profile_image);
 
@@ -81,6 +85,51 @@ public class EditProfileActivity extends AppCompatActivity {
 
         TextInputLayout dobInputLayout = findViewById(R.id.input_dob_layout);
         editProfileLayout = findViewById(R.id.edit_profile_form_layout);
+
+        switch (std) {
+            case "J":
+                standard = "Jr. KG";
+                break;
+            case "S":
+                standard = "Sr. KG";
+                break;
+            case "1":
+                standard = "1st Standard";
+                break;
+            case "2":
+                standard = "2nd Standard";
+                break;
+            case "3":
+                standard = "3rd Standard";
+                break;
+            case "4":
+                standard = "4th Standard";
+                break;
+            case "5":
+                standard = "5th Standard";
+                break;
+            case "6":
+                standard = "6th Standard";
+                break;
+            case "7":
+                standard = "7th Standard";
+                break;
+            case "8":
+                standard = "8th Standard";
+                break;
+            case "9":
+                standard = "9th Standard";
+                break;
+            case "X":
+                standard = "10th Standard";
+                break;
+            default:
+                standard = "Pre-School";
+                break;
+        }
+
+        String path = "students/" + standard + "/" + ID + "/profile_picture/";
+        profileImageRef = storage.getReference().child(path);
 
         showData();
 
@@ -131,7 +180,7 @@ public class EditProfileActivity extends AppCompatActivity {
             // Handle the selected image URI here
             progressBar.setVisibility(View.VISIBLE);
 
-            StorageReference setImage = profileImageRef.child(uid + ".jpg");
+            StorageReference setImage = profileImageRef.child(ID + ".jpg");
 
             UploadTask uploadTask = setImage.putFile(result);
             if (uploadTask.isComplete()) {
@@ -180,58 +229,9 @@ public class EditProfileActivity extends AppCompatActivity {
             });
         });
     }
-        public void showData() {
+    public void showData() {
         progressBar.setVisibility(View.VISIBLE);
-
-
-            SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
-
-            String ID = sharedPreferences.getString("id", "A001");
-            String std = ID.substring(0,1);
-            String standard;
-            switch (std) {
-                case "J":
-                    standard = "Jr. KG";
-                    break;
-                case "S":
-                    standard = "Sr. KG";
-                    break;
-                case "1":
-                    standard = "1st Standard";
-                    break;
-                case "2":
-                    standard = "2nd Standard";
-                    break;
-                case "3":
-                    standard = "3rd Standard";
-                    break;
-                case "4":
-                    standard = "4th Standard";
-                    break;
-                case "5":
-                    standard = "5th Standard";
-                    break;
-                case "6":
-                    standard = "6th Standard";
-                    break;
-                case "7":
-                    standard = "7th Standard";
-                    break;
-                case "8":
-                    standard = "8th Standard";
-                    break;
-                case "9":
-                    standard = "9th Standard";
-                    break;
-                case "X":
-                    standard = "10th Standard";
-                    break;
-                default:
-                    standard = "Pre-School";
-                    break;
-            }
-
-            mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID).child("Profile Information");
+        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID).child("Profile Information");
 
         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -357,7 +357,7 @@ public class EditProfileActivity extends AppCompatActivity {
     public void deleteImage(View view) {
         // Remove the user's profile picture from Firebase Storage
         progressBar.setVisibility(View.VISIBLE);
-        profileImageRef.child(uid + ".jpg").delete().addOnSuccessListener(aVoid -> {
+        profileImageRef.child(ID + ".jpg").delete().addOnSuccessListener(aVoid -> {
             // Remove the profile picture URL from the user's Firebase Realtime Database entry
             mDbRef.child("profileImageUrl").setValue("").addOnSuccessListener(aVoid1 -> {
                 // Set the default profile picture in the ImageView

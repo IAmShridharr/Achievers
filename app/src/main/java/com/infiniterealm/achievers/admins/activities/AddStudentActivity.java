@@ -20,10 +20,11 @@ import java.util.Objects;
 public class AddStudentActivity extends AppCompatActivity {
 
     ConstraintLayout layout;
-    EditText name, ID, email, password;
+    EditText name, ID, email, password, role;
     Button add;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+    DatabaseReference rootRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +37,14 @@ public class AddStudentActivity extends AppCompatActivity {
         ID = findViewById(R.id.input_id);
         email = findViewById(R.id.input_email);
         password = findViewById(R.id.input_password);
+        role = findViewById(R.id.input_role);
 
         add = findViewById(R.id.add);
 
         add.setOnClickListener(view -> {
             firebaseDatabase = FirebaseDatabase.getInstance();
             databaseReference = firebaseDatabase.getReference("students");
+            rootRef = firebaseDatabase.getReference();
 
             String Name = name.getText().toString();
             String iD = ID.getText().toString();
@@ -90,6 +93,7 @@ public class AddStudentActivity extends AppCompatActivity {
             }
             String Email = email.getText().toString();
             String Password = password.getText().toString();
+            String Role = role.getText().toString();
             final String[] UID = new String[1];
 
             if (Name.isEmpty() || iD.isEmpty() || Email.isEmpty() || Password.isEmpty()) {
@@ -99,21 +103,28 @@ public class AddStudentActivity extends AppCompatActivity {
                 mAuth.createUserWithEmailAndPassword(Email, Password).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         UID[0] = Objects.requireNonNull(task.getResult().getUser()).getUid();
-                        StudentSignUpHelper studentSignUpHelper = new StudentSignUpHelper(Name, iD, Email, Password);
-                        databaseReference.child(standard).child(iD).child("Profile Information").setValue(studentSignUpHelper);
-                        databaseReference.child(standard).child(iD).child("Profile Information").child("UID").setValue(UID[0]);
-                        databaseReference.child(standard).child(iD).child("Profile Information").child("profileImageUrl").setValue("");
-                        databaseReference.child(standard).child(iD).child("Profile Information").child("phone").setValue("");
-                        databaseReference.child(standard).child(iD).child("Profile Information").child("parentPhone").setValue("");
-                        databaseReference.child(standard).child(iD).child("Profile Information").child("DOB").setValue("");
-                        databaseReference.child(standard).child(iD).child("Profile Information").child("school").setValue("");
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("roles");
-                        ref.child("students").child(UID[0]).setValue(true);
+                        if (Role.equals("Student")) {
+                            ref.child("students").child(UID[0]).setValue(true);
+                            StudentSignUpHelper studentSignUpHelper = new StudentSignUpHelper(Name, iD, Email, Password, UID[0], Role);
+                            rootRef.child("Auth").child(iD).setValue(studentSignUpHelper);
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("name").setValue(Name);
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("id").setValue(iD);
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("email").setValue(Email);
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("profileImageUrl").setValue("");
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("phone").setValue("");
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("parentPhone").setValue("");
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("DOB").setValue("");
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("school").setValue("");
+                        } else {
+                            ref.child("admins").child(UID[0]).setValue(true);
+                        }
 
                         name.setText(null);
                         ID.setText(null);
                         email.setText(null);
                         password.setText(null);
+                        role.setText(null);
 
                         showSnackBar(view, "Student Added Successfully!");
                     } else {
