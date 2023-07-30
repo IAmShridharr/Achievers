@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,11 +28,11 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.LoginActivity;
 import com.infiniterealm.achievers.R;
-import com.infiniterealm.achievers.admins.models.StudentListItemModel;
 import com.infiniterealm.achievers.students.activities.StudentProfileActivity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -102,7 +101,6 @@ public class HomeFragment extends Fragment {
 
         String ID = sharedPreferences.getString("id", "A001");
         String std = ID.substring(0,1);
-        Log.d("Class", std);
         String standard;
         switch (std) {
             case "J":
@@ -163,14 +161,19 @@ public class HomeFragment extends Fragment {
 
                 // Loop through the children nodes (i.e., "5th Standard", "7th Standard", etc.)
                 for (DataSnapshot standardSnapshot : dataSnapshot.getChildren()) {
-                    // Loop through the students within each standard
+//                    Log.d("test", standardSnapshot.getRef().toString());
+                    // Loop through the student ids within each standard
                     for (DataSnapshot studentSnapshot : standardSnapshot.getChildren()) {
-                        // Loop through the profile information within each student
-                        for (DataSnapshot profileSnapshot : studentSnapshot.getChildren()) {
-                            if (studentSnapshot.hasChild("Profile Information")) {
-                                // Assuming each student node has a "name" field
-                                String name = studentSnapshot.child("name").getValue(String.class);
-                                String rollNumber = studentSnapshot.child("id").getValue(String.class);
+//                        Log.d("test", studentSnapshot.getRef().toString());
+                        // Loop through the children within each student id node
+                        for (DataSnapshot childrenSnapshot : studentSnapshot.getChildren()) {
+//                            Log.d("test", childrenSnapshot.getRef().toString());
+                            if (Objects.equals(childrenSnapshot.getKey(), "Profile Information")) {
+//                               Log.d("test", childrenSnapshot.getRef().toString());
+                                // Assuming each Personal Information node has a "name" and "rollNumber" fields
+                                String name = childrenSnapshot.child("name").getValue(String.class);
+                                String rollNumber = childrenSnapshot.child("id").getValue(String.class);
+
                                 if (name != null) {
                                     itemList.add(name + ": " + rollNumber);
 
