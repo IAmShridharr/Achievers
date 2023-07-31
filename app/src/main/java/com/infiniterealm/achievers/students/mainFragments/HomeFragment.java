@@ -10,13 +10,18 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,9 +51,12 @@ public class HomeFragment extends Fragment {
     SharedPreferences sharedPreferences;
     View rootView;
     FirebaseAuth mAuth;
-    EditText search;
+    ImageView search;
     FirebaseUser user;
     DatabaseReference mDbRef;
+    ConstraintLayout homeLayout;
+    ImageView notifications;
+    ImageView addPost;
     private List<String> itemList = new ArrayList<>();
     private List<String> originalItemList = new ArrayList<>();
     private ArrayAdapter<String> adapter;
@@ -94,6 +102,12 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_home, container, false);
+
+        homeLayout = rootView.findViewById(R.id.home_layout);
+        search = rootView.findViewById(R.id.search);
+
+        notifications = rootView.findViewById(R.id.notifications);
+        addPost = rootView.findViewById(R.id.addPost);
 
         sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
@@ -145,152 +159,21 @@ public class HomeFragment extends Fragment {
         }
 
         mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID);
-        search = rootView.findViewById(R.id.input_search);
 
-        // Initialize the ListView and Adapter
-        ListView listView = rootView.findViewById(R.id.searchItemList);
-        adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, itemList);
-        listView.setAdapter(adapter);
+        notifications.setOnClickListener(view -> navigateToFragment(new NotificationsFragment()));
+        addPost.setOnClickListener(view -> navigateToFragment(new AddPostFragment()));
+        search.setOnClickListener(view -> navigateToFragment(new SearchFragment()));
 
-        DatabaseReference studentsRef = FirebaseDatabase.getInstance().getReference("students");
-        studentsRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // Clear the itemList to avoid duplicate entries
-                itemList.clear();
-
-                // Loop through the children nodes (i.e., "5th Standard", "7th Standard", etc.)
-                for (DataSnapshot standardSnapshot : dataSnapshot.getChildren()) {
-//                    Log.d("test", standardSnapshot.getRef().toString());
-                    // Loop through the student ids within each standard
-                    for (DataSnapshot studentSnapshot : standardSnapshot.getChildren()) {
-//                        Log.d("test", studentSnapshot.getRef().toString());
-                        // Loop through the children within each student id node
-                        for (DataSnapshot childrenSnapshot : studentSnapshot.getChildren()) {
-//                            Log.d("test", childrenSnapshot.getRef().toString());
-                            if (Objects.equals(childrenSnapshot.getKey(), "Profile Information")) {
-//                               Log.d("test", childrenSnapshot.getRef().toString());
-                                // Assuming each Personal Information node has a "name" and "rollNumber" fields
-                                String name = childrenSnapshot.child("name").getValue(String.class);
-                                String rollNumber = childrenSnapshot.child("id").getValue(String.class);
-
-                                if (name != null) {
-                                    itemList.add(name + ": " + rollNumber);
-
-                                    // Copy the contents of itemList to originalItemList
-                                    originalItemList.add(name + ": " + rollNumber);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Update the adapter to reflect the new data
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle any errors that may occur while fetching data
-
-            }
-        });
-
-        mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String name = dataSnapshot.child("name").getValue(String.class);
-                String roll = dataSnapshot.child("id").getValue(String.class);
-
-                // Use the retrieved name value as needed
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle error case
-            }
-        });
-
-        // Set OnItemClickListener for the ListView
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Get the clicked item from the adapter
-                String clickedItem = adapter.getItem(position);
-                assert clickedItem != null;
-                String Name = clickedItem.substring(0, clickedItem.length()-6);
-                String ID = clickedItem.substring(clickedItem.length()-4);
-                itemList.clear();
-                adapter.notifyDataSetChanged();
-
-                Intent intent = new Intent(requireContext(), StudentProfileActivity.class);
-                intent.putExtra("name", Name);
-                intent.putExtra("ID", ID);
-                startActivity(intent);
-            }
-        });
-
-        search.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Get the entered text from the search EditText
-                String searchText = charSequence.toString().trim();
-
-                // Clear the itemList to avoid duplicate entries
-                itemList.clear();
-
-                // If the search text is empty, show the hint
-                if (searchText.isEmpty()) {
-                    search.setHint("for your Classmates, Friends etc.");
-                    // Add all original data to the itemList
-                    itemList.addAll(originalItemList);
-
-                    listView.setVisibility(View.GONE);
-                } else {
-                    listView.setVisibility(View.VISIBLE);
-                    // If search text is not empty, filter data based on the search text
-                    for (String name : originalItemList) {
-                        if (name.toLowerCase().contains(searchText.toLowerCase())) {
-                            itemList.add(name);
-                        }
-                    }
-                }
-
-                // Update the adapter to reflect the new data
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        rootView.findViewById(R.id.input_search).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                search.setHint("for your Classmates, Friends etc.");
-            }
-        });
-
-        rootView.findViewById(R.id.studentLogout).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.clear();
-                editor.apply();
-                //Your code
-                mAuth.signOut();
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                requireActivity().finish();
-            }
+        rootView.findViewById(R.id.studentLogout).setOnClickListener(v -> {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+            //Your code
+            mAuth.signOut();
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            requireActivity().finish();
         });
 
         return rootView;
@@ -300,4 +183,12 @@ public class HomeFragment extends Fragment {
         Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
         snackbar.show();
     }
+
+    private void navigateToFragment(Fragment fragment) {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame, fragment);
+        fragmentTransaction.commit();
+    }
+
 }

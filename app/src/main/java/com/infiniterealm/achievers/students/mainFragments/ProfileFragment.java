@@ -176,7 +176,7 @@ public class ProfileFragment extends Fragment {
             getStudentData();
         }
 
-        rootView.findViewById(R.id.follow).setOnClickListener(view -> {
+        rootView.findViewById(R.id.edit).setOnClickListener(view -> {
             Intent intent = new Intent(getContext(), EditProfileActivity.class);
             startActivity(intent);
         });
@@ -185,7 +185,7 @@ public class ProfileFragment extends Fragment {
             Snackbar bar = Snackbar.make(profileLayout, "Opening WhatsApp...", Snackbar.LENGTH_LONG);
             bar.show();
 
-            String phoneNumberWithCountryCode = "+918104810125";
+            String phoneNumberWithCountryCode = "+918432312431";
             String message = "Hello Bhaiya, I got a question!";
 
             try {
