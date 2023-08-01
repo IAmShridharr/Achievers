@@ -2,12 +2,14 @@ package com.infiniterealm.achievers.admins.activities;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.radiobutton.MaterialRadioButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -20,8 +22,9 @@ import java.util.Objects;
 public class AddStudentActivity extends AppCompatActivity {
 
     ConstraintLayout layout;
-    EditText name, ID, email, password, role;
-    Button add;
+    EditText name, ID, email, password;
+    MaterialButton add;
+    RadioGroup role;
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     DatabaseReference rootRef;
@@ -37,7 +40,7 @@ public class AddStudentActivity extends AppCompatActivity {
         ID = findViewById(R.id.input_id);
         email = findViewById(R.id.input_email);
         password = findViewById(R.id.input_password);
-        role = findViewById(R.id.input_role);
+        role = findViewById(R.id.role);
 
         add = findViewById(R.id.add);
 
@@ -93,7 +96,22 @@ public class AddStudentActivity extends AppCompatActivity {
             }
             String Email = email.getText().toString();
             String Password = password.getText().toString();
-            String Role = role.getText().toString();
+            int selectedRole = role.getCheckedRadioButtonId();
+
+            String Role;
+            if (selectedRole == -1) {
+                showSnackBar(view, "Please Select Role!");
+                return;
+            } else {
+                MaterialRadioButton selectedRadioBtn = findViewById(selectedRole);
+                if (selectedRadioBtn.getText().toString().equals("Student")) {
+                    Role = "Student";
+                } else if (selectedRadioBtn.getText().toString().equals("Admin")) {
+                    Role = "Admin";
+                } else {
+                    Role = null;
+                }
+            }
             final String[] UID = new String[1];
 
             if (Name.isEmpty() || iD.isEmpty() || Email.isEmpty() || Password.isEmpty()) {
@@ -104,6 +122,7 @@ public class AddStudentActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         UID[0] = Objects.requireNonNull(task.getResult().getUser()).getUid();
                         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("roles");
+                        assert Role != null;
                         if (Role.equals("Student")) {
                             ref.child("students").child(UID[0]).setValue(true);
                             StudentSignUpHelper studentSignUpHelper = new StudentSignUpHelper(Name, iD, Email, Password, UID[0], Role);
@@ -116,6 +135,9 @@ public class AddStudentActivity extends AppCompatActivity {
                             databaseReference.child(standard).child(iD).child("Profile Information").child("parentPhone").setValue("");
                             databaseReference.child(standard).child(iD).child("Profile Information").child("DOB").setValue("");
                             databaseReference.child(standard).child(iD).child("Profile Information").child("school").setValue("");
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("followers").setValue(0);
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("tests").setValue(0);
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("followings").setValue(0);
                         } else {
                             ref.child("admins").child(UID[0]).setValue(true);
                         }
@@ -124,7 +146,7 @@ public class AddStudentActivity extends AppCompatActivity {
                         ID.setText(null);
                         email.setText(null);
                         password.setText(null);
-                        role.setText(null);
+                        role.clearCheck();
 
                         showSnackBar(view, "Student Added Successfully!");
                     } else {

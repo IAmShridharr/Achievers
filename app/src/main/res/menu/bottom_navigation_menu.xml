@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/home"
+        android:id="@+id/homePage"
         android:enabled="true"
         android:icon="@drawable/baseline_home_24"
         android:title="@string/home"/>
     <item
-        android:id="@+id/tests"
+        android:id="@+id/testsPage"
         android:enabled="true"
         android:icon="@drawable/baseline_test_24"
         android:title="@string/tests"/>
     <item
-        android:id="@+id/schedule"
+        android:id="@+id/schedulePage"
         android:enabled="true"
         android:icon="@drawable/baseline_schedule_24"
         android:title="@string/schedule"/>
     <item
-        android:id="@+id/homework"
+        android:id="@+id/homeworkPage"
         android:enabled="true"
         android:icon="@drawable/baseline_home_work_24"
         android:title="@string/homework"/>
     <item
-        android:id="@+id/profile"
+        android:id="@+id/profilePage"
         android:enabled="true"
         android:icon="@drawable/baseline_person_24"
         android:title="@string/profile"/>

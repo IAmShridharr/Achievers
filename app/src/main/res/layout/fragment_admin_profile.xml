@@ -29,7 +29,7 @@
             android:id="@+id/addStudent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/add_student"
+            android:text="Add User"
             android:textSize="24sp"
             app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraSmall" />
 

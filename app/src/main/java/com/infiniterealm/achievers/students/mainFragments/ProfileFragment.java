@@ -47,7 +47,7 @@ public class ProfileFragment extends Fragment {
     FirebaseUser user;
     DatabaseReference mDbRef;
     String uid;
-    TextView name, rollNumber, email, phone, parentPhone, dob, school;
+    TextView name, rollNumber, email, phone, parentPhone, dob, school, followers, tests, followings;
     ProgressBar progressBar;
     LinearLayout rollNumberLayout, emailLayout, phoneLayout, parentPhoneLayout, dobLayout, schoolLayout, profileLayout;
     private ShapeableImageView profileImage;
@@ -107,6 +107,10 @@ public class ProfileFragment extends Fragment {
         parentPhone = rootView.findViewById(R.id.parent_phone);
         dob = rootView.findViewById(R.id.dob);
         school = rootView.findViewById(R.id.school);
+
+        followers = rootView.findViewById(R.id.followers);
+        tests = rootView.findViewById(R.id.tests);
+        followings = rootView.findViewById(R.id.followings);
 
         profileImage = rootView.findViewById(R.id.profile_image);
 
@@ -225,6 +229,13 @@ public class ProfileFragment extends Fragment {
                 String ParentPhone = snapshot.child("parentPhone").getValue(String.class);
                 String DOB = snapshot.child("DOB").getValue(String.class);
                 String School = snapshot.child("school").getValue(String.class);
+                String Followers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
+                String Tests = String.valueOf(snapshot.child("tests").getValue(Integer.class));
+                String Followings = String.valueOf(snapshot.child("followings").getValue(Integer.class));
+
+                followers.setText(Followers);
+                tests.setText(Tests);
+                followings.setText(Followings);
 
                 if (DP == null || DP.equals("")) {
                     profileImage.setImageResource(R.drawable.profile_picture_placeholder);

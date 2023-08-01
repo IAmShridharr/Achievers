@@ -24,43 +24,40 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:weightSum="40">
+            android:weightSum="10">
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
+                android:layout_weight="7"
+                android:text="@string/app_name"
                 android:textSize="24sp"
-                android:textStyle="bold"
-                android:text="@string/app_name" />
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/search"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_weight="12"
+                android:layout_weight="1"
                 android:contentDescription="Search Icon"
                 android:src="@drawable/baseline_search_24" />
 
             <ImageView
                 android:id="@+id/notifications"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_weight="12"
+                android:layout_weight="1"
                 android:contentDescription="Notification Icon"
                 android:src="@drawable/baseline_notifications_none_24" />
 
             <ImageView
                 android:id="@+id/addPost"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_weight="12"
+                android:layout_weight="1"
                 android:contentDescription="Add Post Icon"
                 android:src="@drawable/baseline_add_box_24" />
 
@@ -81,6 +78,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.viewpager.widget.ViewPager
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+
+                </androidx.viewpager.widget.ViewPager>
+            </ScrollView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"

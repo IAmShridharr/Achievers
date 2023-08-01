@@ -74,7 +74,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/hwStreak"
+                        android:id="@+id/followers"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -87,7 +87,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="@string/homework"
+                        android:text="Followers"
                         android:textSize="14sp" />
 
                 </LinearLayout>
@@ -99,7 +99,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/testStreak"
+                        android:id="@+id/tests"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -108,7 +108,7 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/testStreak_text"
+                        android:id="@+id/tests_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -124,7 +124,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/attendanceStreak"
+                        android:id="@+id/followings"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -137,7 +137,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="@string/attendance"
+                        android:text="Following"
                         android:textSize="14sp" />
 
                 </LinearLayout>

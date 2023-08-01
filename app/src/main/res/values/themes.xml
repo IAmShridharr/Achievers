@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.Achievers" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/pink_300</item>
+        <item name="colorPrimary">@color/pink_900</item>
         <item name="colorPrimaryVariant">@color/pink_900</item>
         <item name="colorOnPrimary">@color/design_default_color_on_primary</item>
         <!-- Secondary brand color. -->
@@ -20,28 +20,24 @@
     </style>
 
     <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/red_100</item>
+        <item name="android:color">@color/pink_50</item>
     </style>
 
     <style name="ThemeOverlay.App.BottomNavigationView" parent="">
 
-<!--        Background Color-->
-<!--        <item name="colorSurface">@color/red_50</item>-->
-        <item name="colorSurface">@color/pink_100</item>
+        <!-- Background Color-->
+        <item name="colorSurface">@color/pink_900</item>
 
-<!--        Text Color-->
-<!--        <item name="colorOnSurface">@color/red_700</item>-->
-        <item name="colorOnSurface">@color/pink_700</item>
+        <!-- Text Color-->
+        <item name="colorOnSurface">@color/pink_50</item>
 
-<!--        Icon Color-->
-<!--        <item name="colorOnSurfaceVariant">@color/red_300</item>-->
-        <item name="colorOnSurfaceVariant">@color/pink_400</item>
+        <!-- Icon Color-->
+        <item name="colorOnSurfaceVariant">@color/pink_50</item>
 
-        <item name="colorControlHighlight">@color/red_400</item>
+<!--         <item name="colorControlHighlight">@color/pink_300</item>-->
 
-<!--        Selected Icon Color-->
-<!--        <item name="colorOnSecondaryContainer">@color/red_700</item>-->
-        <item name="colorOnSecondaryContainer">@color/pink_700</item>
+        <!-- Selected Icon Color-->
+        <item name="colorOnSecondaryContainer">@color/pink_900</item>
     </style>
 
     <style name="MyDatePickerDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog">
@@ -50,12 +46,12 @@
         <!-- Change the text color of the dialog -->
 
         <!-- Change the color of the selected date -->
-        <item name="colorSecondary">@color/red_700</item>
+        <item name="colorSecondary">@color/pink_900</item>
 
         <!-- Change the color of the buttons -->
-        <item name="colorPrimary">@color/red_700</item>
-        <item name="android:colorButtonNormal">@color/red_700</item>
-        <item name="colorOnPrimary">@color/red_700</item>
+        <item name="colorPrimary">@color/pink_900</item>
+        <item name="android:colorButtonNormal">@color/pink_900</item>
+        <item name="colorOnPrimary">@color/pink_900</item>
     </style>
 
 </resources>

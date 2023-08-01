@@ -31,7 +31,7 @@
                 android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/add_student"
+                android:text="Add User"
                 android:textSize="34sp"
                 android:textStyle="bold" />
 
@@ -127,28 +127,35 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_role_layout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:text="Select Role"
+                android:textSize="16sp" />
+
+            <RadioGroup
+                android:id="@+id/role"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/role"
-                android:maxWidth="488dp"
-                android:padding="10dp"
-                app:endIconMode="clear_text"
-                app:startIconContentDescription="Role Icon"
-                app:startIconDrawable="@drawable/baseline_person_24">
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="10dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_role"
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/student"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:maxLength="7"
-                    android:textColorHint="#8D6E63"
-                    tools:ignore="TextContrastCheck" />
+                    android:text="Student" />
 
-            </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/admin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Admin" />
+
+            </RadioGroup>
 
             <ProgressBar
                 android:id="@+id/progress"
@@ -162,7 +169,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="@string/add_student"
+                android:text="Add"
                 android:textSize="24sp"
                 app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraSmall"
                 tools:ignore="DuplicateSpeakableTextCheck" />

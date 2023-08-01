@@ -20,11 +20,11 @@ import com.infiniterealm.achievers.students.mainFragments.TestsFragment;
 public class StudentActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationView;
-    final int HOME = R.id.home;
-    final int TESTS = R.id.tests;
-    final int SCHEDULE = R.id.schedule;
-    final int HOMEWORK = R.id.homework;
-    final int PROFILE = R.id.profile;
+    final int HOME = R.id.homePage;
+    final int TESTS = R.id.testsPage;
+    final int SCHEDULE = R.id.schedulePage;
+    final int HOMEWORK = R.id.homeworkPage;
+    final int PROFILE = R.id.profilePage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
