@@ -1,4 +1,4 @@
-package com.infiniterealm.achievers.students.helper;
+package com.infiniterealm.achievers.utilities;
 
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;

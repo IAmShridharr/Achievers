@@ -1,10 +1,5 @@
 package com.infiniterealm.achievers;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -16,9 +11,15 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.material.snackbar.Snackbar;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,16 +28,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.admins.activities.AdminActivity;
+import com.infiniterealm.achievers.explorer.activities.ExplorerActivity;
 import com.infiniterealm.achievers.students.activities.StudentActivity;
+import com.infiniterealm.achievers.utilities.SnackBarHelper;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDbRef;
+    private SharedPreferences sharedPreferences;
+    private View customSnackBarView;
+    private TextView snackBarActionTurnOn, snackBarActionContinue;
     ConstraintLayout layout;
-
-
     private static final int SPLASH_SCREEN_TIMEOUT = 6000; // 6 seconds
     private static final int INTERNET_WAITING_TIME_WIFI = 10000; // 10 seconds
     private static final int INTERNET_WAITING_TIME_DATA = 5000; // 5 seconds
@@ -46,11 +50,15 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+        customSnackBarView = LayoutInflater.from(this).inflate(R.layout.custom_snackbar, layout, false);
+        snackBarActionTurnOn = customSnackBarView.findViewById(R.id.action1);
+        snackBarActionContinue = customSnackBarView.findViewById(R.id.action2);
+
         layout = findViewById(R.id.splash);
 
         mAuth = FirebaseAuth.getInstance();
         mDbRef = FirebaseDatabase.getInstance().getReference();
-        SharedPreferences sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
         TextView textView = findViewById(R.id.textView);
         String Brand = "Achiever's Home";
@@ -67,6 +75,10 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         animator.start();
 
+        // Listeners for the SnackBar Action Buttons
+        snackBarActionTurnOn.setOnClickListener(view -> showInternetOptionsDialog(sharedPreferences));
+        snackBarActionContinue.setOnClickListener(view -> continueWithoutInternet(sharedPreferences));
+
         checkInternetConnection(sharedPreferences);
     }
 
@@ -76,11 +88,10 @@ public class SplashScreenActivity extends AppCompatActivity {
         boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
         if (!isConnected) {
-            // No internet connection
-            Snackbar snackbar = Snackbar.make(layout, "No internet connection", Snackbar.LENGTH_INDEFINITE).setAction("TURN ON", view -> showInternetOptionsDialog(sharedPreferences));
-            snackbar.show();
+            // Internet Connection Unavailable
+            SnackBarHelper.showShortCustomSnackBar(this, layout, "No Internet", "Turn On", "Continue");
         } else {
-            // Internet connection available
+            // Internet Connection Available
             new Handler().postDelayed(() -> {
 
                 String savedEmail = sharedPreferences.getString("email", null);
@@ -113,6 +124,25 @@ public class SplashScreenActivity extends AppCompatActivity {
             new Handler().postDelayed(() -> checkInternetConnection(sharedPreferences), INTERNET_WAITING_TIME_DATA);
         });
         builder.show();
+    }
+
+    public void continueWithoutInternet(SharedPreferences sharedPreferences) {
+        String savedEmail = sharedPreferences.getString("email", null);
+        String savedPassword = sharedPreferences.getString("password", null);
+        boolean isStudent = sharedPreferences.getBoolean("isStudent", false);
+
+        Intent intent;
+        if (savedEmail != null && savedPassword != null) {
+            if (isStudent) {
+                intent = new Intent(SplashScreenActivity.this, StudentActivity.class);
+            } else {
+                intent = new Intent(SplashScreenActivity.this, AdminActivity.class);
+            }
+        } else {
+            intent = new Intent(SplashScreenActivity.this, ExplorerActivity.class);
+        }
+        startActivity(intent);
+        finish();
     }
 
     private void login(String savedEmail, String savedPassword) {
@@ -151,6 +181,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        checkInternetConnection(sharedPreferences);
     }
 
     @Override

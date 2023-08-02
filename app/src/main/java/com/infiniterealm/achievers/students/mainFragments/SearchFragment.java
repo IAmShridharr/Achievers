@@ -13,17 +13,14 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,9 +28,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.infiniterealm.achievers.LoginActivity;
 import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.students.activities.StudentProfileActivity;
+import com.infiniterealm.achievers.utilities.Essentials;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,50 +103,9 @@ public class SearchFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        String ID = sharedPreferences.getString("id", "A001");
-        String std = ID.substring(0,1);
-        String standard;
-        switch (std) {
-            case "J":
-                standard = "Jr. KG";
-                break;
-            case "S":
-                standard = "Sr. KG";
-                break;
-            case "1":
-                standard = "1st Standard";
-                break;
-            case "2":
-                standard = "2nd Standard";
-                break;
-            case "3":
-                standard = "3rd Standard";
-                break;
-            case "4":
-                standard = "4th Standard";
-                break;
-            case "5":
-                standard = "5th Standard";
-                break;
-            case "6":
-                standard = "6th Standard";
-                break;
-            case "7":
-                standard = "7th Standard";
-                break;
-            case "8":
-                standard = "8th Standard";
-                break;
-            case "9":
-                standard = "9th Standard";
-                break;
-            case "X":
-                standard = "10th Standard";
-                break;
-            default:
-                standard = "Pre-School";
-                break;
-        }
+        String ID = sharedPreferences.getString("id", null);
+        assert ID != null;
+        String standard = Essentials.getStandard(ID);
 
         mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID);
         search = rootView.findViewById(R.id.input_search);
@@ -206,8 +162,8 @@ public class SearchFragment extends Fragment {
         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String name = dataSnapshot.child("name").getValue(String.class);
-                String roll = dataSnapshot.child("id").getValue(String.class);
+//                String name = dataSnapshot.child("name").getValue(String.class);
+//                String roll = dataSnapshot.child("id").getValue(String.class);
 
                 // Use the retrieved name value as needed
 

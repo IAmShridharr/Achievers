@@ -30,6 +30,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.infiniterealm.achievers.R;
+import com.infiniterealm.achievers.utilities.Essentials;
+import com.infiniterealm.achievers.utilities.SnackBarHelper;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,7 +43,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     String ID;
-    String std;
     String standard;
     private TextInputEditText name, rollNumber, email, dobInput, phone, parentPhone, school;
     private StorageReference profileImageRef;
@@ -60,8 +61,9 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
 
         sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
-        ID = sharedPreferences.getString("id", "A001");
-        std = ID.substring(0,1);
+        ID = sharedPreferences.getString("id", null);
+        assert ID != null;
+        standard = Essentials.getStandard(ID);
 
         progressBar = findViewById(R.id.progressBar);
 
@@ -85,48 +87,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
         TextInputLayout dobInputLayout = findViewById(R.id.input_dob_layout);
         editProfileLayout = findViewById(R.id.edit_profile_form_layout);
-
-        switch (std) {
-            case "J":
-                standard = "Jr. KG";
-                break;
-            case "S":
-                standard = "Sr. KG";
-                break;
-            case "1":
-                standard = "1st Standard";
-                break;
-            case "2":
-                standard = "2nd Standard";
-                break;
-            case "3":
-                standard = "3rd Standard";
-                break;
-            case "4":
-                standard = "4th Standard";
-                break;
-            case "5":
-                standard = "5th Standard";
-                break;
-            case "6":
-                standard = "6th Standard";
-                break;
-            case "7":
-                standard = "7th Standard";
-                break;
-            case "8":
-                standard = "8th Standard";
-                break;
-            case "9":
-                standard = "9th Standard";
-                break;
-            case "X":
-                standard = "10th Standard";
-                break;
-            default:
-                standard = "Pre-School";
-                break;
-        }
 
         String path = "students/" + standard + "/" + ID + "/profile_picture/";
         profileImageRef = storage.getReference().child(path);
@@ -167,13 +127,11 @@ public class EditProfileActivity extends AppCompatActivity {
             if (isSchoolChanged()) {
                 isSchoolChanged = true;
             }
-            Snackbar snackbar;
             if (isPhoneChanged || isParentPhoneChanged || isDOBChanged || isSchoolChanged) {
-                snackbar = Snackbar.make(editProfileLayout, "Profile Updated Successfully!", Snackbar.LENGTH_LONG);
+                SnackBarHelper.showShortSnackBar(editProfileLayout, "Profile Updated Successfully!");
             } else {
-                snackbar = Snackbar.make(editProfileLayout, "No Changes Found!", Snackbar.LENGTH_LONG);
+                SnackBarHelper.showShortSnackBar(editProfileLayout, "No Changes Found!");
             }
-            snackbar.show();
         });
 
         mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
@@ -184,8 +142,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
             UploadTask uploadTask = setImage.putFile(result);
             if (uploadTask.isComplete()) {
-                Snackbar snackbar = Snackbar.make(editProfileLayout, "Profile Picture Uploaded!", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                SnackBarHelper.showShortSnackBar(editProfileLayout, "Profile Picture Uploaded!");
             }
             uploadTask.addOnSuccessListener(taskSnapshot -> {
 
@@ -204,8 +161,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                 Glide.with(getApplicationContext())
                                         .load(profileImageUrl)
                                         .into(profileImage);
-                                Snackbar snackbar = Snackbar.make(editProfileLayout, "Profile Picture Updated Successfully!", Snackbar.LENGTH_LONG);
-                                snackbar.show();
+                                SnackBarHelper.showShortSnackBar(editProfileLayout, "Profile Picture Updated Successfully!");
                                 removeDP.setVisibility(View.VISIBLE);
                                 addDP.setVisibility(View.GONE);
                             }
@@ -219,13 +175,11 @@ public class EditProfileActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                 }).addOnFailureListener(e -> {
                     progressBar.setVisibility(View.GONE);
-                    Snackbar snackbar = Snackbar.make(editProfileLayout, "Something went wrong!", Snackbar.LENGTH_LONG);
-                    snackbar.show();
+                    SnackBarHelper.showShortSnackBar(editProfileLayout, "Something went wrong!");
                 });
             }).addOnFailureListener(e -> {
                 progressBar.setVisibility(View.GONE);
-                Snackbar snackbar = Snackbar.make(editProfileLayout, "Something went wrong!", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                SnackBarHelper.showShortSnackBar(editProfileLayout, "Something went wrong!");
             });
         });
     }

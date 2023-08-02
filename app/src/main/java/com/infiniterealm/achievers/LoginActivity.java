@@ -135,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                                                 // Save the user's login status
                                                 SharedPreferences.Editor editor = mPrefs.edit();
                                                 editor.putBoolean("isLoggedIn", true);
+                                                editor.putBoolean("isStudent", true);
                                                 editor.putString("email", email);
                                                 editor.putString("password", password);
                                                 editor.putString("id", rollNumber);
@@ -226,6 +227,8 @@ public class LoginActivity extends AppCompatActivity {
                                         // Save the user's login status
                                         SharedPreferences.Editor editor = mPrefs.edit();
                                         editor.putBoolean("isLoggedIn", true);
+                                        editor.putBoolean("isAdmin", true);
+                                        editor.putString("id", rollNumber);
                                         editor.putString("email", email);
                                         editor.putString("password", password);
                                         editor.apply();

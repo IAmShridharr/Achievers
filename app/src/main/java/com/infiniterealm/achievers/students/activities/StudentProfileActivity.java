@@ -35,15 +35,17 @@ public class StudentProfileActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     DatabaseReference mDbRef;
     DatabaseReference myDBRef;
-    MaterialButton complaint, follow;
-    TextView profileName, name, rollNumber, email, phone, parentPhone, dob, school, followers, followings, tests;
+    MaterialButton complaint, follow, message;
+    TextView profileName, name, rollNumber, dob, school, followers, followings, tests;
     ProgressBar progressBar;
-    LinearLayout rollNumberLayout, emailLayout, phoneLayout, parentPhoneLayout, dobLayout, schoolLayout, profileLayout;
+    LinearLayout rollNumberLayout, dobLayout, schoolLayout, profileLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_profile);
+
+        message = findViewById(R.id.message);
 
         sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
@@ -100,9 +102,6 @@ public class StudentProfileActivity extends AppCompatActivity {
         name = findViewById(R.id.name);
         profileName = findViewById(R.id.profileName);
         rollNumber = findViewById(R.id.roll_number);
-        email = findViewById(R.id.email);
-        phone = findViewById(R.id.phone);
-        parentPhone = findViewById(R.id.parent_phone);
         dob = findViewById(R.id.dob);
         school = findViewById(R.id.school);
 
@@ -116,10 +115,7 @@ public class StudentProfileActivity extends AppCompatActivity {
         profileImage = findViewById(R.id.student_profile_image);
 
         profileLayout = findViewById(R.id.profile_page_layout);
-        emailLayout = findViewById(R.id.email_layout);
         rollNumberLayout = findViewById(R.id.roll_number_layout);
-        phoneLayout = findViewById(R.id.phone_layout);
-        parentPhoneLayout = findViewById(R.id.parent_phone_layout);
         dobLayout = findViewById(R.id.dob_layout);
         schoolLayout = findViewById(R.id.school_layout);
 
@@ -196,13 +192,11 @@ public class StudentProfileActivity extends AppCompatActivity {
                 if (i.resolveActivity(packageManager) != null) {
                     getApplicationContext().startActivity(i);
                 } else {
-                    Snackbar snackbar = Snackbar.make(profileLayout, "WhatsApp not Installed!", Snackbar.LENGTH_LONG);
-                    snackbar.show();
+                    showSnackBar(profileLayout, "WhatsApp not Installed!");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Snackbar snackbar = Snackbar.make(profileLayout, "WhatsApp not Installed!", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                showSnackBar(profileLayout, "WhatsApp not Installed!");
             }
         });
 
@@ -211,13 +205,16 @@ public class StudentProfileActivity extends AppCompatActivity {
         followDataRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean isFollowed = false;
                 if (snapshot.child(studentID).exists()) {
                     String followButtonText = "Unfollow";
                     follow.setText(followButtonText);
+                    follow.setIconResource(R.drawable.baseline_person_remove_24);
+                    message.setEnabled(true);
                 } else {
                     String followButtonText = "Follow";
                     follow.setText(followButtonText);
+                    follow.setIconResource(R.drawable.baseline_person_add_24);
+                    message.setEnabled(false);
                 }
             }
 
@@ -227,108 +224,109 @@ public class StudentProfileActivity extends AppCompatActivity {
             }
         });
 
-        follow.setOnClickListener(new View.OnClickListener() {
+        message.setOnClickListener(view -> showSnackBar(view, "Message is clicked!"));
+
+        follow.setOnClickListener(view -> myDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                myDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        int myFollowers, myFollowings, myNewFollowers, myNewFollowings;
-                        String MyFollowers, MyFollowings, MyNewFollowers, MyNewFollowings;
-                        MyFollowers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
-                        MyFollowings = String.valueOf(snapshot.child("followings").getValue(Integer.class));
-                        myFollowers = Integer.parseInt(MyFollowers);
-                        myFollowings = Integer.parseInt(MyFollowings);
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int myFollowers, myFollowings, myNewFollowers, myNewFollowings;
+                String MyFollowers, MyFollowings, MyNewFollowers, MyNewFollowings;
+                MyFollowers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
+                MyFollowings = String.valueOf(snapshot.child("followings").getValue(Integer.class));
+                myFollowers = Integer.parseInt(MyFollowers);
+                myFollowings = Integer.parseInt(MyFollowings);
 
-                        if (follow.getText().toString().equals("Follow")) {
-                            myNewFollowings = myFollowings+1;
-                            MyNewFollowings = String.valueOf(myNewFollowings);
-                            myDBRef.child("followings").setValue(myNewFollowings);
+                if (follow.getText().toString().equals("Follow")) {
+                    myNewFollowings = myFollowings+1;
+                    MyNewFollowings = String.valueOf(myNewFollowings);
+                    myDBRef.child("followings").setValue(myNewFollowings);
 
-                            mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    int theirFollowers, theirFollowings, theirNewFollowers, theirNewFollowings;
-                                    String TheirFollowers, TheirFollowings, TheirNewFollowers, TheirNewFollowings;
+                    mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            int theirFollowers, theirFollowings, theirNewFollowers, theirNewFollowings;
+                            String TheirFollowers, TheirFollowings, TheirNewFollowers, TheirNewFollowings;
 
-                                    TheirFollowers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
-                                    TheirFollowings = String.valueOf(snapshot.child("followings").getValue(Integer.class));
+                            TheirFollowers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
+                            TheirFollowings = String.valueOf(snapshot.child("followings").getValue(Integer.class));
 
-                                    theirFollowers = Integer.parseInt(TheirFollowers);
-                                    theirFollowings = Integer.parseInt(TheirFollowings);
+                            theirFollowers = Integer.parseInt(TheirFollowers);
+                            theirFollowings = Integer.parseInt(TheirFollowings);
 
-                                    theirNewFollowers = theirFollowers+1;
-                                    TheirNewFollowers = String.valueOf(theirNewFollowers);
+                            theirNewFollowers = theirFollowers+1;
+                            TheirNewFollowers = String.valueOf(theirNewFollowers);
 
-                                    mDbRef.child("followers").setValue(theirNewFollowers);
+                            mDbRef.child("followers").setValue(theirNewFollowers);
 
-                                    followers.setText(TheirNewFollowers);
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
-
-                            DatabaseReference theirNewRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(studentID).child("Follow Data");
-                            theirNewRef.child("Followers").child(MyID).setValue(true);
-
-                            DatabaseReference myNewRef = FirebaseDatabase.getInstance().getReference("students").child(myStandard).child(MyID).child("Follow Data");
-                            myNewRef.child("Followings").child(studentID).setValue(true);
-
-                            String changedText = "Unfollow";
-                            follow.setText(changedText);
-                        } else {
-                            myNewFollowings = myFollowings-1;
-                            MyNewFollowings = String.valueOf(myNewFollowings);
-                            myDBRef.child("followings").setValue(myNewFollowings);
-
-                            mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    int theirFollowers, theirFollowings, theirNewFollowers, theirNewFollowings;
-                                    String TheirFollowers, TheirFollowings, TheirNewFollowers, TheirNewFollowings;
-
-                                    TheirFollowers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
-                                    TheirFollowings = String.valueOf(snapshot.child("followings").getValue(Integer.class));
-
-                                    theirFollowers = Integer.parseInt(TheirFollowers);
-                                    theirFollowings = Integer.parseInt(TheirFollowings);
-
-                                    theirNewFollowers = theirFollowers-1;
-                                    TheirNewFollowers = String.valueOf(theirNewFollowers);
-
-                                    mDbRef.child("followers").setValue(theirNewFollowers);
-
-                                    followers.setText(TheirNewFollowers);
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-
-                                }
-                            });
-
-                            DatabaseReference theirNewRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(studentID).child("Follow Data");
-                            theirNewRef.child("Followers").child(MyID).removeValue();
-
-                            DatabaseReference myNewRef = FirebaseDatabase.getInstance().getReference("students").child(myStandard).child(MyID).child("Follow Data");
-                            myNewRef.child("Followings").child(studentID).removeValue();
-
-                            String changedText = "Follow";
-                            follow.setText(changedText);
+                            followers.setText(TheirNewFollowers);
                         }
 
-                    }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        }
+                    });
 
-                    }
-                });
+                    DatabaseReference theirNewRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(studentID).child("Follow Data");
+                    theirNewRef.child("Followers").child(MyID).setValue(true);
+
+                    DatabaseReference myNewRef = FirebaseDatabase.getInstance().getReference("students").child(myStandard).child(MyID).child("Follow Data");
+                    myNewRef.child("Followings").child(studentID).setValue(true);
+
+                    String changedText = "Unfollow";
+                    follow.setText(changedText);
+                    follow.setIconResource(R.drawable.baseline_person_remove_24);
+                    message.setEnabled(true);
+                } else {
+                    myNewFollowings = myFollowings-1;
+                    MyNewFollowings = String.valueOf(myNewFollowings);
+                    myDBRef.child("followings").setValue(myNewFollowings);
+
+                    mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            int theirFollowers, theirFollowings, theirNewFollowers, theirNewFollowings;
+                            String TheirFollowers, TheirFollowings, TheirNewFollowers, TheirNewFollowings;
+
+                            TheirFollowers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
+                            TheirFollowings = String.valueOf(snapshot.child("followings").getValue(Integer.class));
+
+                            theirFollowers = Integer.parseInt(TheirFollowers);
+                            theirFollowings = Integer.parseInt(TheirFollowings);
+
+                            theirNewFollowers = theirFollowers-1;
+                            TheirNewFollowers = String.valueOf(theirNewFollowers);
+
+                            mDbRef.child("followers").setValue(theirNewFollowers);
+
+                            followers.setText(TheirNewFollowers);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+
+                        }
+                    });
+
+                    DatabaseReference theirNewRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(studentID).child("Follow Data");
+                    theirNewRef.child("Followers").child(MyID).removeValue();
+
+                    DatabaseReference myNewRef = FirebaseDatabase.getInstance().getReference("students").child(myStandard).child(MyID).child("Follow Data");
+                    myNewRef.child("Followings").child(studentID).removeValue();
+
+                    String changedText = "Follow";
+                    follow.setText(changedText);
+                    follow.setIconResource(R.drawable.baseline_person_add_24);
+                    message.setEnabled(false);
+                }
+
             }
-        });
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        }));
     }
 
     private void getStudentData() {
@@ -337,10 +335,7 @@ public class StudentProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String DP = snapshot.child("profileImageUrl").getValue(String.class);
                 String Name = snapshot.child("name").getValue(String.class);
-                String Email = snapshot.child("email").getValue(String.class);
                 String RollNumber = snapshot.child("id").getValue(String.class);
-                String Phone = snapshot.child("phone").getValue(String.class);
-                String ParentPhone = snapshot.child("parentPhone").getValue(String.class);
                 String DOB = snapshot.child("DOB").getValue(String.class);
                 String School = snapshot.child("school").getValue(String.class);
                 String Followers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
@@ -372,27 +367,6 @@ public class StudentProfileActivity extends AppCompatActivity {
                     rollNumberLayout.setVisibility(View.VISIBLE);
                     rollNumber.setText(RollNumber);
                 }
-                assert Email != null;
-                if (Email.isEmpty()) {
-                    emailLayout.setVisibility(View.GONE);
-                } else {
-                    emailLayout.setVisibility(View.VISIBLE);
-                    email.setText(Email);
-                }
-                assert Phone != null;
-                if (Phone.isEmpty()) {
-                    phoneLayout.setVisibility(View.GONE);
-                } else {
-                    phoneLayout.setVisibility(View.VISIBLE);
-                    phone.setText(Phone);
-                }
-                assert ParentPhone != null;
-                if (ParentPhone.isEmpty()) {
-                    parentPhoneLayout.setVisibility(View.GONE);
-                } else {
-                    parentPhoneLayout.setVisibility(View.VISIBLE);
-                    parentPhone.setText(ParentPhone);
-                }
                 assert DOB != null;
                 if (DOB.isEmpty()) {
                     dobLayout.setVisibility(View.GONE);
@@ -413,8 +387,7 @@ public class StudentProfileActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Snackbar snackbar = Snackbar.make(profileLayout, "Something went wrong", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                showSnackBar(profileLayout, "Something went wrong!");
             }
         });
     }

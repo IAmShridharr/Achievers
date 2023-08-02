@@ -168,77 +168,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/email_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/email_heading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/email_"
-                    android:textSize="16sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:text=""
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/phone_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/phone_heading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/phone_"
-                    android:textSize="16sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:text=""
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/parent_phone_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/parent_phone_heading"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/parent_s_phone_"
-                    android:textSize="16sp" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/parent_phone"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:text=""
-                    android:textSize="16sp" />
-            </LinearLayout>
-
-            <LinearLayout
                 android:id="@+id/dob_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -290,6 +219,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
+                android:weightSum="3"
                 android:orientation="horizontal">
 
                 <com.google.android.material.button.MaterialButton
@@ -297,8 +227,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginEnd="5dp"
                     android:layout_weight="1"
+                    app:icon="@drawable/baseline_person_add_24"
+                    app:iconGravity="textStart"
                     android:text="@string/follow"
                     app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraSmall" />
 
@@ -308,11 +239,24 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginStart="5dp"
-                    android:layout_weight="1"
-                    android:text="Report this Student"
-                    app:icon="@drawable/ic_whatsapp"
+                    android:layout_weight="2"
+                    android:text="Report"
+                    app:icon="@drawable/outline_report_problem_24"
                     app:iconGravity="textStart"
                     app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraSmall" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/message"
+                    android:layout_width="48dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:enabled="false"
+                    app:icon="@drawable/baseline_message_24"
+                    app:iconGravity="textStart"
+                    app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.ExtraSmall" />
+
             </LinearLayout>
 
         </LinearLayout>

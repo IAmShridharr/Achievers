@@ -7,10 +7,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +14,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,6 +28,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.students.activities.EditProfileActivity;
+import com.infiniterealm.achievers.utilities.Essentials;
+import com.infiniterealm.achievers.utilities.SnackBarHelper;
 
 import java.net.URLEncoder;
 
@@ -47,9 +47,9 @@ public class ProfileFragment extends Fragment {
     FirebaseUser user;
     DatabaseReference mDbRef;
     String uid;
-    TextView name, rollNumber, email, phone, parentPhone, dob, school, followers, tests, followings;
+    TextView name, rollNumber, dob, school, followers, tests, followings;
     ProgressBar progressBar;
-    LinearLayout rollNumberLayout, emailLayout, phoneLayout, parentPhoneLayout, dobLayout, schoolLayout, profileLayout;
+    LinearLayout rollNumberLayout, dobLayout, schoolLayout, profileSnackBarLayout;
     private ShapeableImageView profileImage;
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -102,9 +102,6 @@ public class ProfileFragment extends Fragment {
 
         name = rootView.findViewById(R.id.name);
         rollNumber = rootView.findViewById(R.id.roll_number);
-        email = rootView.findViewById(R.id.email);
-        phone = rootView.findViewById(R.id.phone);
-        parentPhone = rootView.findViewById(R.id.parent_phone);
         dob = rootView.findViewById(R.id.dob);
         school = rootView.findViewById(R.id.school);
 
@@ -114,11 +111,8 @@ public class ProfileFragment extends Fragment {
 
         profileImage = rootView.findViewById(R.id.profile_image);
 
-        profileLayout = rootView.findViewById(R.id.profile_layout);
-        emailLayout = rootView.findViewById(R.id.email_layout);
+        profileSnackBarLayout = rootView.findViewById(R.id.profileSnackBarLayout);
         rollNumberLayout = rootView.findViewById(R.id.roll_number_layout);
-        phoneLayout = rootView.findViewById(R.id.phone_layout);
-        parentPhoneLayout = rootView.findViewById(R.id.parent_phone_layout);
         dobLayout = rootView.findViewById(R.id.dob_layout);
         schoolLayout = rootView.findViewById(R.id.school_layout);
 
@@ -129,50 +123,9 @@ public class ProfileFragment extends Fragment {
 
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
-        String ID = sharedPreferences.getString("id", "A001");
-        String std = ID.substring(0,1);
-        String standard;
-        switch (std) {
-            case "J":
-                standard = "Jr. KG";
-                break;
-            case "S":
-                standard = "Sr. KG";
-                break;
-            case "1":
-                standard = "1st Standard";
-                break;
-            case "2":
-                standard = "2nd Standard";
-                break;
-            case "3":
-                standard = "3rd Standard";
-                break;
-            case "4":
-                standard = "4th Standard";
-                break;
-            case "5":
-                standard = "5th Standard";
-                break;
-            case "6":
-                standard = "6th Standard";
-                break;
-            case "7":
-                standard = "7th Standard";
-                break;
-            case "8":
-                standard = "8th Standard";
-                break;
-            case "9":
-                standard = "9th Standard";
-                break;
-            case "X":
-                standard = "10th Standard";
-                break;
-            default:
-                standard = "Pre-School";
-                break;
-        }
+        String ID = sharedPreferences.getString("id", null);
+        assert ID != null;
+        String standard = Essentials.getStandard(ID);
 
         mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID).child("Profile Information");
 
@@ -186,8 +139,7 @@ public class ProfileFragment extends Fragment {
         });
 
         rootView.findViewById(R.id.contact_teacher).setOnClickListener(view -> {
-            Snackbar bar = Snackbar.make(profileLayout, "Opening WhatsApp...", Snackbar.LENGTH_LONG);
-            bar.show();
+            SnackBarHelper.showShortSnackBar(profileSnackBarLayout, "Opening WhatsApp...");
 
             String phoneNumberWithCountryCode = "+918432312431";
             String message = "Hello Bhaiya, I got a question!";
@@ -203,13 +155,11 @@ public class ProfileFragment extends Fragment {
                 if (i.resolveActivity(packageManager) != null) {
                     requireContext().startActivity(i);
                 } else {
-                    Snackbar snackbar = Snackbar.make(profileLayout, "WhatsApp not Installed!", Snackbar.LENGTH_LONG);
-                    snackbar.show();
+                    SnackBarHelper.showShortSnackBar(profileSnackBarLayout, "WhatsApp not Installed!");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Snackbar snackbar = Snackbar.make(profileLayout, "WhatsApp not Installed!", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                SnackBarHelper.showShortSnackBar(profileSnackBarLayout, "WhatsApp not Installed!");
             }
         });
 
@@ -223,10 +173,7 @@ public class ProfileFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String DP = snapshot.child("profileImageUrl").getValue(String.class);
                 String Name = snapshot.child("name").getValue(String.class);
-                String Email = snapshot.child("email").getValue(String.class);
                 String RollNumber = snapshot.child("id").getValue(String.class);
-                String Phone = snapshot.child("phone").getValue(String.class);
-                String ParentPhone = snapshot.child("parentPhone").getValue(String.class);
                 String DOB = snapshot.child("DOB").getValue(String.class);
                 String School = snapshot.child("school").getValue(String.class);
                 String Followers = String.valueOf(snapshot.child("followers").getValue(Integer.class));
@@ -260,27 +207,6 @@ public class ProfileFragment extends Fragment {
                     rollNumberLayout.setVisibility(View.VISIBLE);
                     rollNumber.setText(RollNumber);
                 }
-                assert Email != null;
-                if (Email.isEmpty()) {
-                    emailLayout.setVisibility(View.GONE);
-                } else {
-                    emailLayout.setVisibility(View.VISIBLE);
-                    email.setText(Email);
-                }
-                assert Phone != null;
-                if (Phone.isEmpty()) {
-                    phoneLayout.setVisibility(View.GONE);
-                } else {
-                    phoneLayout.setVisibility(View.VISIBLE);
-                    phone.setText(Phone);
-                }
-                assert ParentPhone != null;
-                if (ParentPhone.isEmpty()) {
-                    parentPhoneLayout.setVisibility(View.GONE);
-                } else {
-                    parentPhoneLayout.setVisibility(View.VISIBLE);
-                    parentPhone.setText(ParentPhone);
-                }
                 assert DOB != null;
                 if (DOB.isEmpty()) {
                     dobLayout.setVisibility(View.GONE);
@@ -301,8 +227,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Snackbar snackbar = Snackbar.make(profileLayout, "Something went wrong", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                SnackBarHelper.showShortSnackBar(profileSnackBarLayout, "Something went wrong!");
             }
         });
     }
