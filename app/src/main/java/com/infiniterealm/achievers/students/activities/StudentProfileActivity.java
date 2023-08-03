@@ -2,8 +2,7 @@ package com.infiniterealm.achievers.students.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -17,19 +16,18 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.R;
-
-import java.net.URLEncoder;
+import com.infiniterealm.achievers.utilities.Essentials;
+import com.infiniterealm.achievers.utilities.SnackBarHelper;
 
 public class StudentProfileActivity extends AppCompatActivity {
 
-    String MyID;
+    String MyID, Device;
     ConstraintLayout constraintLayout;
     ShapeableImageView profileImage;
     SharedPreferences sharedPreferences;
@@ -46,6 +44,8 @@ public class StudentProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_student_profile);
 
         message = findViewById(R.id.message);
+
+        Device = Build.MANUFACTURER + " - " + Build.MODEL;
 
         sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
@@ -175,29 +175,12 @@ public class StudentProfileActivity extends AppCompatActivity {
         getStudentData();
 
         complaint.setOnClickListener(view -> {
-            Snackbar bar = Snackbar.make(profileLayout, "Opening WhatsApp...", Snackbar.LENGTH_LONG);
-            bar.show();
+            SnackBarHelper.showShortSnackBar(profileLayout, "Opening WhatsApp...");
 
             String phoneNumberWithCountryCode = "+918432312431";
             String message = "Hello Bhaiya, I have to complain about " + studentName + ".";
 
-            try {
-                PackageManager packageManager = getApplicationContext().getPackageManager();
-                Intent i = new Intent(Intent.ACTION_VIEW);
-
-                String url = "https://api.whatsapp.com/send?phone=" + phoneNumberWithCountryCode + "&text=" + URLEncoder.encode(message, "UTF-8");
-                i.setPackage("com.whatsapp");
-                i.setData(Uri.parse(url));
-
-                if (i.resolveActivity(packageManager) != null) {
-                    getApplicationContext().startActivity(i);
-                } else {
-                    showSnackBar(profileLayout, "WhatsApp not Installed!");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                showSnackBar(profileLayout, "WhatsApp not Installed!");
-            }
+            Essentials.openWhatsApp(phoneNumberWithCountryCode, message, getApplicationContext());
         });
 
         DatabaseReference followDataRef = FirebaseDatabase.getInstance().getReference().child("students").child(myStandard).child(MyID).child("Follow Data").child("Followings");
@@ -224,7 +207,7 @@ public class StudentProfileActivity extends AppCompatActivity {
             }
         });
 
-        message.setOnClickListener(view -> showSnackBar(view, "Message is clicked!"));
+        message.setOnClickListener(view -> SnackBarHelper.showShortSnackBar(view, "Message is clicked!"));
 
         follow.setOnClickListener(view -> myDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -387,13 +370,20 @@ public class StudentProfileActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                showSnackBar(profileLayout, "Something went wrong!");
+                SnackBarHelper.showShortSnackBar(profileLayout, "Something went wrong!");
             }
         });
     }
 
-    private void showSnackBar(View view, String message) {
-        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
-        snackbar.show();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Essentials.updateLastSeen(MyID, Device);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Essentials.updateLastSeen(MyID, Device);
     }
 }

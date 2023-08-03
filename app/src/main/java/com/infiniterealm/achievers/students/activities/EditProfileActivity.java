@@ -1,26 +1,24 @@
 package com.infiniterealm.achievers.students.activities;
 
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +28,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.infiniterealm.achievers.R;
+import com.infiniterealm.achievers.students.helper.StudentRepository;
+import com.infiniterealm.achievers.students.models.StudentProfileModel;
 import com.infiniterealm.achievers.utilities.Essentials;
 import com.infiniterealm.achievers.utilities.SnackBarHelper;
 
@@ -44,54 +44,41 @@ public class EditProfileActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     String ID;
     String standard;
+    MaterialButton update;
+    TextInputLayout dobInputLayout;
     private TextInputEditText name, rollNumber, email, dobInput, phone, parentPhone, school;
     private StorageReference profileImageRef;
     private DatabaseReference mDbRef;
-    FirebaseUser student;
     private TextView addDP, removeDP;
-    private String DP, Name, RollNumber, Email, Phone, ParentPhone, DOB, School;
+    private String Phone, ParentPhone, DOB, School;
     private ShapeableImageView profileImage;
     private LinearLayout editProfileLayout;
     private ActivityResultLauncher<String> mGetContent;
     private ProgressBar progressBar;
+    private String Device;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
+        defineLayout();
+
+        Device = Build.MANUFACTURER + " - " + Build.MODEL;
+
         sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         ID = sharedPreferences.getString("id", null);
         assert ID != null;
         standard = Essentials.getStandard(ID);
 
-        progressBar = findViewById(R.id.progressBar);
+        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID).child("Profile Information");
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        student = mAuth.getCurrentUser();
         FirebaseStorage storage = FirebaseStorage.getInstance();
-
-        profileImage = findViewById(R.id.edit_profile_image);
-
-        addDP = findViewById(R.id.add_profile_picture);
-        removeDP = findViewById(R.id.remove_profile_picture);
-        name = findViewById(R.id.input_name);
-        rollNumber = findViewById(R.id.input_id);
-        email = findViewById(R.id.input_email);
-        dobInput = findViewById(R.id.input_dob);
-        phone = findViewById(R.id.input_phone);
-        parentPhone = findViewById(R.id.input_parent_phone);
-        school = findViewById(R.id.input_school);
-
-        Button update = findViewById(R.id.update);
-
-        TextInputLayout dobInputLayout = findViewById(R.id.input_dob_layout);
-        editProfileLayout = findViewById(R.id.edit_profile_form_layout);
 
         String path = "students/" + standard + "/" + ID + "/profile_picture/";
         profileImageRef = storage.getReference().child(path);
 
-        showData();
+        getAndDisplayStudentData(ID);
 
         dobInputLayout.setStartIconOnClickListener(view -> {
             // Create a MaterialDatePicker instance
@@ -150,13 +137,13 @@ public class EditProfileActivity extends AppCompatActivity {
                 taskSnapshot.getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                     // Update the user's database with the download URL
                     String downloadUrl = uri.toString();
-                    mDbRef.child("profileImageUrl").setValue(downloadUrl);
+                    mDbRef.child("profileImageURL").setValue(downloadUrl);
 
                     mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.exists() && dataSnapshot.hasChild("profileImageUrl")) {
-                                String profileImageUrl = dataSnapshot.child("profileImageUrl").getValue(String.class);
+                            if (dataSnapshot.exists() && dataSnapshot.hasChild("profileImageURL")) {
+                                String profileImageUrl = dataSnapshot.child("profileImageURL").getValue(String.class);
                                 // Use the profileImageUrl to load the image using Glide
                                 Glide.with(getApplicationContext())
                                         .load(profileImageUrl)
@@ -183,83 +170,43 @@ public class EditProfileActivity extends AppCompatActivity {
             });
         });
     }
-    public void showData() {
-        progressBar.setVisibility(View.VISIBLE);
-        mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID).child("Profile Information");
 
-        mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+    private void getAndDisplayStudentData(String studentID) {
+        StudentRepository studentRepository = new StudentRepository();
+        studentRepository.getStudentData(studentID, new StudentRepository.OnStudentDataListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                DP = snapshot.child("profileImageUrl").getValue(String.class);
-                Name = snapshot.child("name").getValue(String.class);
-                RollNumber = snapshot.child("id").getValue(String.class);
-                Email = snapshot.child("email").getValue(String.class);
-                Phone = snapshot.child("phone").getValue(String.class);
-                ParentPhone = snapshot.child("parentPhone").getValue(String.class);
-                DOB = snapshot.child("DOB").getValue(String.class);
-                School = snapshot.child("school").getValue(String.class);
+            public void onStudentDataLoaded(StudentProfileModel student) {
+                // Update the UI with the fetched data
 
-                if (DP == null || DP.equals("")) {
+                if (student.getProfileImageURL() == null || student.getProfileImageURL().equals("")) {
                     profileImage.setImageResource(R.drawable.profile_picture_placeholder);
-                    removeDP.setVisibility(View.GONE);
                     addDP.setVisibility(View.VISIBLE);
+                    removeDP.setVisibility(View.GONE);
                 } else {
                     Glide.with(getApplicationContext())
-                            .load(DP)
+                            .load(student.getProfileImageURL())
                             .into(profileImage);
-                    removeDP.setVisibility(View.VISIBLE);
                     addDP.setVisibility(View.GONE);
+                    removeDP.setVisibility(View.VISIBLE);
                 }
-                assert Name != null;
-                if (Name.isEmpty()) {
-                    name.setText(Name);
-                } else {
-                    name.setText(Name);
-                }
-                assert RollNumber != null;
-                if (RollNumber.isEmpty()) {
-                    rollNumber.setText(RollNumber);
-                } else {
-                    rollNumber.setText(RollNumber);
-                }
-                assert Email != null;
-                if (Email.isEmpty()) {
-                    email.setText(Email);
-                } else {
-                    email.setText(Email);
-                }
-                assert Phone != null;
-                if (Phone.isEmpty()) {
-                    phone.setText(Phone);
-                } else {
-                    phone.setText(Phone);
-                }
-                assert ParentPhone != null;
-                if (ParentPhone.isEmpty()) {
-                    parentPhone.setText(ParentPhone);
-                } else {
-                    parentPhone.setText(ParentPhone);
-                }
-                assert DOB != null;
-                if (DOB.isEmpty()) {
-                    dobInput.setText(DOB);
-                } else {
-                    dobInput.setText(DOB);
-                }
-                assert School != null;
-                if (School.isEmpty()) {
-                    school.setText(School);
-                } else {
-                    school.setText(School);
-                }
+
+                name.setText(student.getName());
+                rollNumber.setText(student.getId());
+                email.setText(student.getEmail());
+                dobInput.setText(student.getDOB());
+                phone.setText(student.getPhone());
+                parentPhone.setText(student.getParentPhone());
+                school.setText(student.getSchool());
+
+                progressBar.setVisibility(View.GONE);
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                progressBar.setVisibility(View.GONE);
+            public void onStudentDataError(String errorMessage) {
+                // Handle error
+                SnackBarHelper.showShortSnackBar(editProfileLayout, errorMessage);
             }
         });
-        progressBar.setVisibility(View.GONE);
     }
 
     public boolean isPhoneChanged() {
@@ -313,23 +260,54 @@ public class EditProfileActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         profileImageRef.child(ID + ".jpg").delete().addOnSuccessListener(aVoid -> {
             // Remove the profile picture URL from the user's Firebase Realtime Database entry
-            mDbRef.child("profileImageUrl").setValue("").addOnSuccessListener(aVoid1 -> {
+            mDbRef.child("profileImageURL").setValue("").addOnSuccessListener(aVoid1 -> {
                 // Set the default profile picture in the ImageView
                 profileImage.setImageResource(R.drawable.profile_picture_placeholder);
                 progressBar.setVisibility(View.GONE);
-                Snackbar snackbar = Snackbar.make(editProfileLayout, "Profile Picture Deleted Successfully!", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                SnackBarHelper.showShortSnackBar(editProfileLayout, "Profile Picture Deleted Successfully!");
                 removeDP.setVisibility(View.GONE);
                 addDP.setVisibility(View.VISIBLE);
             }).addOnFailureListener(e -> {
                 progressBar.setVisibility(View.GONE);
-                Snackbar snackbar = Snackbar.make(editProfileLayout, "Something went wrong!", Snackbar.LENGTH_LONG);
-                snackbar.show();
+                SnackBarHelper.showShortSnackBar(editProfileLayout, "Something went wrong!");
             });
         }).addOnFailureListener(e -> {
             progressBar.setVisibility(View.GONE);
-            Snackbar snackbar = Snackbar.make(editProfileLayout, "No Profile Picture Exist!", Snackbar.LENGTH_LONG);
-            snackbar.show();
+            SnackBarHelper.showShortSnackBar(editProfileLayout, "No Profile Picture Exists!");
         });
+    }
+
+    private void defineLayout() {
+        profileImage = findViewById(R.id.edit_profile_image);
+
+        addDP = findViewById(R.id.add_profile_picture);
+        removeDP = findViewById(R.id.remove_profile_picture);
+
+        name = findViewById(R.id.input_name);
+        rollNumber = findViewById(R.id.input_id);
+        email = findViewById(R.id.input_email);
+        dobInput = findViewById(R.id.input_dob);
+        phone = findViewById(R.id.input_phone);
+        parentPhone = findViewById(R.id.input_parent_phone);
+        school = findViewById(R.id.input_school);
+
+        update = findViewById(R.id.update);
+
+        dobInputLayout = findViewById(R.id.input_dob_layout);
+        editProfileLayout = findViewById(R.id.edit_profile_form_layout);
+
+        progressBar = findViewById(R.id.progressBar);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Essentials.updateLastSeen(ID, Device);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Essentials.updateLastSeen(ID, Device);
     }
 }

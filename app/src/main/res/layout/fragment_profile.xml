@@ -264,16 +264,4 @@
         </LinearLayout>
     </ScrollView>
 
-    <LinearLayout
-        android:id="@+id/profileSnackBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_scroll">
-
-
-    </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

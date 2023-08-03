@@ -130,7 +130,7 @@ public class AddStudentActivity extends AppCompatActivity {
                             databaseReference.child(standard).child(iD).child("Profile Information").child("name").setValue(Name);
                             databaseReference.child(standard).child(iD).child("Profile Information").child("id").setValue(iD);
                             databaseReference.child(standard).child(iD).child("Profile Information").child("email").setValue(Email);
-                            databaseReference.child(standard).child(iD).child("Profile Information").child("profileImageUrl").setValue("");
+                            databaseReference.child(standard).child(iD).child("Profile Information").child("profileImageURL").setValue("");
                             databaseReference.child(standard).child(iD).child("Profile Information").child("phone").setValue("");
                             databaseReference.child(standard).child(iD).child("Profile Information").child("parentPhone").setValue("");
                             databaseReference.child(standard).child(iD).child("Profile Information").child("DOB").setValue("");

@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -41,8 +41,7 @@ public class HomeFragment extends Fragment {
     View rootView;
     FirebaseAuth mAuth;
     ImageView search;
-    FirebaseUser user;
-    DatabaseReference mDbRef;
+    DatabaseReference mDbRef, authRef;
     ConstraintLayout homeLayout;
     ImageView notifications;
     ImageView addPost;
@@ -98,14 +97,18 @@ public class HomeFragment extends Fragment {
         notifications = rootView.findViewById(R.id.notifications);
         addPost = rootView.findViewById(R.id.addPost);
 
-        sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
 
-        String ID = sharedPreferences.getString("id", "A001");
+        sharedPreferences = requireActivity().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+
+        String ID = sharedPreferences.getString("id", null);
+        assert ID != null;
         String standard = Essentials.getStandard(ID);
 
         mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(ID);
+
+        String device = Build.MANUFACTURER + " - " + Build.MODEL;
+        authRef = FirebaseDatabase.getInstance().getReference("Auth").child(ID).child("Sessions").child(device);
 
         notifications.setOnClickListener(view -> navigateToFragment(new NotificationsFragment()));
         addPost.setOnClickListener(view -> navigateToFragment(new AddPostFragment()));
@@ -115,6 +118,10 @@ public class HomeFragment extends Fragment {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.clear();
             editor.apply();
+
+            authRef.child("lastLoggedOut").setValue(System.currentTimeMillis());
+            authRef.child("lastSeen").setValue(System.currentTimeMillis());
+            authRef.child("isLoggedIn").setValue(false);
             //Your code
             mAuth.signOut();
             Intent intent = new Intent(getContext(), LoginActivity.class);
@@ -124,11 +131,6 @@ public class HomeFragment extends Fragment {
         });
 
         return rootView;
-    }
-
-    private void showSnackBar(View view, String message) {
-        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
-        snackbar.show();
     }
 
     private void navigateToFragment(Fragment fragment) {

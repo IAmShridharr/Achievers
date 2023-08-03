@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -128,7 +129,14 @@ public class LoginActivity extends AppCompatActivity {
                                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                                     if (task.isSuccessful()) {
                                         progressBar.setVisibility(View.GONE);
+
                                         // Sign in success, update UI with the signed-in user's information
+                                        String device = Build.MANUFACTURER + " - " + Build.MODEL;
+
+                                        reference.child(Objects.requireNonNull(firstChild.getKey())).child("Sessions").child(device).child("lastLoggedIn").setValue(System.currentTimeMillis());
+                                        reference.child(Objects.requireNonNull(firstChild.getKey())).child("Sessions").child(device).child("lastSeen").setValue(System.currentTimeMillis());
+                                        reference.child(Objects.requireNonNull(firstChild.getKey())).child("Sessions").child(device).child("isLoggedIn").setValue(true);
+
                                         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -220,6 +228,7 @@ public class LoginActivity extends AppCompatActivity {
                         mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 progressBar.setVisibility(View.GONE);
+
                                 // Sign in success, update UI with the signed-in user's information
                                 mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override

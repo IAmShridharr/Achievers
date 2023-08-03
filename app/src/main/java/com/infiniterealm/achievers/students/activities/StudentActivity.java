@@ -1,8 +1,11 @@
 package com.infiniterealm.achievers.students.activities;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -16,17 +19,19 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.network.NetworkUtils;
-import com.infiniterealm.achievers.utilities.SnackBarHelper;
 import com.infiniterealm.achievers.students.mainFragments.HomeFragment;
 import com.infiniterealm.achievers.students.mainFragments.HomeworkFragment;
 import com.infiniterealm.achievers.students.mainFragments.ProfileFragment;
 import com.infiniterealm.achievers.students.mainFragments.ScheduleFragment;
 import com.infiniterealm.achievers.students.mainFragments.TestsFragment;
+import com.infiniterealm.achievers.utilities.Essentials;
 
 import java.util.ArrayList;
 
 public class StudentActivity extends AppCompatActivity {
 
+    private String ID;
+    private String Device;
     private NetworkUtils networkUtils;
     BottomNavigationView bottomNavigationView;
     final int HOME = R.id.homePage;
@@ -42,6 +47,11 @@ public class StudentActivity extends AppCompatActivity {
 
         ConstraintLayout layout = findViewById(R.id.studentActivityLayout);
 
+        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+
+        ID = sharedPreferences.getString("id", null);
+        Device = Build.MANUFACTURER + " - " + Build.MODEL;
+
         networkUtils = new NetworkUtils(this);
 
         navigateToFragment(new HomeFragment());
@@ -52,7 +62,6 @@ public class StudentActivity extends AppCompatActivity {
             @Override
             public void onNetworkAvailable() {
                 // Internet is available, trigger refresh or any action
-                SnackBarHelper.showShortSnackBarWithAnchorView(layout, "You are Connected", bottomNavigationView);
             }
 
             @Override
@@ -82,7 +91,7 @@ public class StudentActivity extends AppCompatActivity {
 
     public void refresh() {
         // Restart the activity
-        Intent intent = getIntent();
+        @SuppressLint("UnsafeIntentLaunch") Intent intent = getIntent();
         if (isIntentSafe(intent)) {
             finish();
             startActivity(intent);
@@ -110,8 +119,23 @@ public class StudentActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Exit");
+        builder.setMessage("Are you sure you want to exit the app?");
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            // If user confirms exit, finish the activity
+            finishAffinity();
+        });
+        builder.setNegativeButton("No", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        Essentials.updateLastSeen(ID, Device);
         int activeID = bottomNavigationView.getSelectedItemId();
         if (activeID == HOME) {
             navigateToFragment(new HomeFragment());
@@ -127,17 +151,9 @@ public class StudentActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Exit");
-        builder.setMessage("Are you sure you want to exit the app?");
-        builder.setPositiveButton("Yes", (dialog, which) -> {
-            // If user confirms exit, finish the activity
-            finish();
-        });
-        builder.setNegativeButton("No", null);
-        AlertDialog dialog = builder.create();
-        dialog.show();
+    protected void onPause() {
+        super.onPause();
+        Essentials.updateLastSeen(ID, Device);
     }
 
     @Override
@@ -145,6 +161,8 @@ public class StudentActivity extends AppCompatActivity {
         super.onDestroy();
         // Unregister the network callback to avoid leaks
         networkUtils.unregisterNetworkCallback();
+//        Essentials.updateLastSeen(ID, Device);
+//        finish();
     }
 
     private void navigateToFragment(Fragment fragment) {
