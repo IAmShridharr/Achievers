@@ -1,11 +1,5 @@
 package com.infiniterealm.achievers.students.activities;
 
-import android.annotation.SuppressLint;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AlertDialog;
@@ -16,7 +10,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.network.NetworkUtils;
 import com.infiniterealm.achievers.students.mainFragments.HomeFragment;
@@ -25,13 +18,11 @@ import com.infiniterealm.achievers.students.mainFragments.ProfileFragment;
 import com.infiniterealm.achievers.students.mainFragments.ScheduleFragment;
 import com.infiniterealm.achievers.students.mainFragments.TestsFragment;
 import com.infiniterealm.achievers.utilities.Essentials;
-
-import java.util.ArrayList;
+import com.infiniterealm.achievers.utilities.SnackBarHelper;
 
 public class StudentActivity extends AppCompatActivity {
 
-    private String ID;
-    private String Device;
+    ConstraintLayout layout;
     private NetworkUtils networkUtils;
     BottomNavigationView bottomNavigationView;
     final int HOME = R.id.homePage;
@@ -45,32 +36,12 @@ public class StudentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student);
 
-        ConstraintLayout layout = findViewById(R.id.studentActivityLayout);
-
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
-
-        ID = sharedPreferences.getString("id", null);
-        Device = Build.MANUFACTURER + " - " + Build.MODEL;
+        layout = findViewById(R.id.studentActivityLayout);
 
         networkUtils = new NetworkUtils(this);
 
         navigateToFragment(new HomeFragment());
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-
-        // Check network status and handle the refresh action when internet is available
-        networkUtils.checkNetworkStatus(new NetworkUtils.OnNetworkChangeListener() {
-            @Override
-            public void onNetworkAvailable() {
-                // Internet is available, trigger refresh or any action
-            }
-
-            @Override
-            public void onNetworkUnavailable() {
-                // Internet is unavailable, handle this case if needed
-                Snackbar snackbar = Snackbar.make(layout, "No Internet", Snackbar.LENGTH_INDEFINITE).setAction("Refresh", view -> refresh());
-                snackbar.show();
-            }
-        });
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == HOME) {
@@ -87,35 +58,6 @@ public class StudentActivity extends AppCompatActivity {
             return true;
         });
 
-    }
-
-    public void refresh() {
-        // Restart the activity
-        @SuppressLint("UnsafeIntentLaunch") Intent intent = getIntent();
-        if (isIntentSafe(intent)) {
-            finish();
-            startActivity(intent);
-        } else {
-            // Handle the case when the intent is not safe (e.g., show an error message)
-        }
-    }
-
-    private boolean isIntentSafe(Intent intent) {
-        PackageManager packageManager = getPackageManager();
-        ComponentName componentName = intent.resolveActivity(packageManager);
-        if (componentName != null) {
-            String packageName = componentName.getPackageName();
-            ArrayList<String> allowedPackages = getAllowedPackages(); // Add your allowed package names here
-            return allowedPackages.contains(packageName);
-        }
-        return false;
-    }
-
-    private ArrayList<String> getAllowedPackages() {
-        ArrayList<String> allowedPackages = new ArrayList<>();
-        allowedPackages.add("com.infiniterealm.achievers"); // Add the package name of your trusted app here
-        // Add more allowed packages if needed
-        return allowedPackages;
     }
 
     @Override
@@ -135,7 +77,10 @@ public class StudentActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Essentials.updateLastSeen(ID, Device);
+        if(Essentials.checkNetwork(networkUtils)) {
+            SnackBarHelper.showShortSnackBar(layout, "No Internet!");
+        }
+
         int activeID = bottomNavigationView.getSelectedItemId();
         if (activeID == HOME) {
             navigateToFragment(new HomeFragment());
@@ -153,7 +98,6 @@ public class StudentActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Essentials.updateLastSeen(ID, Device);
     }
 
     @Override
@@ -161,8 +105,6 @@ public class StudentActivity extends AppCompatActivity {
         super.onDestroy();
         // Unregister the network callback to avoid leaks
         networkUtils.unregisterNetworkCallback();
-//        Essentials.updateLastSeen(ID, Device);
-//        finish();
     }
 
     private void navigateToFragment(Fragment fragment) {

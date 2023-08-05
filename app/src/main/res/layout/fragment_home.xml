@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/home_layout"
+    android:id="@+id/studentHomeLayout"
     android:padding="10dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -29,7 +29,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_weight="7"
+                android:layout_weight="6"
                 android:text="@string/app_name"
                 android:textSize="24sp"
                 android:textStyle="bold" />
@@ -60,6 +60,15 @@
                 android:layout_weight="1"
                 android:contentDescription="Add Post Icon"
                 android:src="@drawable/baseline_add_box_24" />
+
+            <ImageView
+                android:id="@+id/chats"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:contentDescription="Chats Icon"
+                android:src="@drawable/outline_chat_24" />
 
         </LinearLayout>
     </LinearLayout>

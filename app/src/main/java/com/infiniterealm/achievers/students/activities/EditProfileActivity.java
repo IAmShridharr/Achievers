@@ -1,7 +1,6 @@
 package com.infiniterealm.achievers.students.activities;
 
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -55,7 +54,6 @@ public class EditProfileActivity extends AppCompatActivity {
     private LinearLayout editProfileLayout;
     private ActivityResultLauncher<String> mGetContent;
     private ProgressBar progressBar;
-    private String Device;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +61,6 @@ public class EditProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_profile);
 
         defineLayout();
-
-        Device = Build.MANUFACTURER + " - " + Build.MODEL;
 
         sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
         ID = sharedPreferences.getString("id", null);
@@ -302,12 +298,10 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Essentials.updateLastSeen(ID, Device);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Essentials.updateLastSeen(ID, Device);
     }
 }

@@ -39,9 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar progressBar;
     Button login;
     TextView skip, forgetPassword;
-
-    SharedPreferences mPrefs;
-
+    SharedPreferences sharedPreferences;
     private FirebaseAuth mAuth;
     private DatabaseReference mDbRef;
     DatabaseReference reference;
@@ -59,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         skip = findViewById(R.id.skip);
         forgetPassword = findViewById(R.id.forget_password);
 
-        mPrefs = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
         skip.setOnClickListener(view -> {
             Intent intent = new Intent(LoginActivity.this, ExplorerActivity.class);
@@ -77,7 +75,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             } else {
                 progressBar.setVisibility(View.GONE);
-
                 showSnackBar(layout, "All Fields Are Required");
             }
         });
@@ -134,14 +131,13 @@ public class LoginActivity extends AppCompatActivity {
                                         String device = Build.MANUFACTURER + " - " + Build.MODEL;
 
                                         reference.child(Objects.requireNonNull(firstChild.getKey())).child("Sessions").child(device).child("lastLoggedIn").setValue(System.currentTimeMillis());
-                                        reference.child(Objects.requireNonNull(firstChild.getKey())).child("Sessions").child(device).child("lastSeen").setValue(System.currentTimeMillis());
                                         reference.child(Objects.requireNonNull(firstChild.getKey())).child("Sessions").child(device).child("isLoggedIn").setValue(true);
 
                                         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 // Save the user's login status
-                                                SharedPreferences.Editor editor = mPrefs.edit();
+                                                SharedPreferences.Editor editor = sharedPreferences.edit();
                                                 editor.putBoolean("isLoggedIn", true);
                                                 editor.putBoolean("isStudent", true);
                                                 editor.putString("email", email);
@@ -234,7 +230,7 @@ public class LoginActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         // Save the user's login status
-                                        SharedPreferences.Editor editor = mPrefs.edit();
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
                                         editor.putBoolean("isLoggedIn", true);
                                         editor.putBoolean("isAdmin", true);
                                         editor.putString("id", rollNumber);

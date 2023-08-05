@@ -2,7 +2,6 @@ package com.infiniterealm.achievers.students.activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -27,7 +26,7 @@ import com.infiniterealm.achievers.utilities.SnackBarHelper;
 
 public class StudentProfileActivity extends AppCompatActivity {
 
-    String MyID, Device;
+    String MyID;
     ConstraintLayout constraintLayout;
     ShapeableImageView profileImage;
     SharedPreferences sharedPreferences;
@@ -45,54 +44,11 @@ public class StudentProfileActivity extends AppCompatActivity {
 
         message = findViewById(R.id.message);
 
-        Device = Build.MANUFACTURER + " - " + Build.MODEL;
-
         sharedPreferences = getApplicationContext().getSharedPreferences("LoginPrefs", MODE_PRIVATE);
 
-        MyID = sharedPreferences.getString("id", "A001");
-        String myStd = MyID.substring(0,1);
-        String myStandard;
-        switch (myStd) {
-            case "J":
-                myStandard = "Jr. KG";
-                break;
-            case "S":
-                myStandard = "Sr. KG";
-                break;
-            case "1":
-                myStandard = "1st Standard";
-                break;
-            case "2":
-                myStandard = "2nd Standard";
-                break;
-            case "3":
-                myStandard = "3rd Standard";
-                break;
-            case "4":
-                myStandard = "4th Standard";
-                break;
-            case "5":
-                myStandard = "5th Standard";
-                break;
-            case "6":
-                myStandard = "6th Standard";
-                break;
-            case "7":
-                myStandard = "7th Standard";
-                break;
-            case "8":
-                myStandard = "8th Standard";
-                break;
-            case "9":
-                myStandard = "9th Standard";
-                break;
-            case "X":
-                myStandard = "10th Standard";
-                break;
-            default:
-                myStandard = "Pre-School";
-                break;
-        }
+        MyID = sharedPreferences.getString("id", null);
+        assert MyID != null;
+        String myStandard = Essentials.getStandard(MyID);
 
         constraintLayout = findViewById(R.id.studentProfilePage);
 
@@ -125,49 +81,7 @@ public class StudentProfileActivity extends AppCompatActivity {
         profileName.setText(profileText);
         String studentID = intent.getStringExtra("ID");
         assert studentID != null;
-        String std = studentID.substring(0,1);
-        String standard;
-        switch (std) {
-            case "J":
-                standard = "Jr. KG";
-                break;
-            case "S":
-                standard = "Sr. KG";
-                break;
-            case "1":
-                standard = "1st Standard";
-                break;
-            case "2":
-                standard = "2nd Standard";
-                break;
-            case "3":
-                standard = "3rd Standard";
-                break;
-            case "4":
-                standard = "4th Standard";
-                break;
-            case "5":
-                standard = "5th Standard";
-                break;
-            case "6":
-                standard = "6th Standard";
-                break;
-            case "7":
-                standard = "7th Standard";
-                break;
-            case "8":
-                standard = "8th Standard";
-                break;
-            case "9":
-                standard = "9th Standard";
-                break;
-            case "X":
-                standard = "10th Standard";
-                break;
-            default:
-                standard = "Pre-School";
-                break;
-        }
+        String standard = Essentials.getStandard(studentID);
 
         myDBRef = FirebaseDatabase.getInstance().getReference("students").child(myStandard).child(MyID).child("Profile Information");
         mDbRef = FirebaseDatabase.getInstance().getReference("students").child(standard).child(studentID).child("Profile Information");
@@ -314,7 +228,7 @@ public class StudentProfileActivity extends AppCompatActivity {
 
     private void getStudentData() {
         mDbRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
+                @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String DP = snapshot.child("profileImageUrl").getValue(String.class);
                 String Name = snapshot.child("name").getValue(String.class);
@@ -378,12 +292,10 @@ public class StudentProfileActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Essentials.updateLastSeen(MyID, Device);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Essentials.updateLastSeen(MyID, Device);
     }
 }

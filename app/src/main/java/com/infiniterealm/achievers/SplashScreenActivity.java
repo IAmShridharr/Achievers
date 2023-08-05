@@ -11,7 +11,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,6 +20,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,7 +31,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.infiniterealm.achievers.admins.activities.AdminActivity;
 import com.infiniterealm.achievers.explorer.activities.ExplorerActivity;
 import com.infiniterealm.achievers.students.activities.StudentActivity;
-import com.infiniterealm.achievers.utilities.SnackBarHelper;
 
 @SuppressLint("CustomSplashScreen")
 public class SplashScreenActivity extends AppCompatActivity {
@@ -38,8 +38,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mDbRef;
     private SharedPreferences sharedPreferences;
-    private View customSnackBarView;
-    private TextView snackBarActionTurnOn, snackBarActionContinue;
+    private TextView continueWithoutInternet;
     ConstraintLayout layout;
     private static final int SPLASH_SCREEN_TIMEOUT = 6000; // 6 seconds
     private static final int INTERNET_WAITING_TIME_WIFI = 10000; // 10 seconds
@@ -50,9 +49,7 @@ public class SplashScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        customSnackBarView = LayoutInflater.from(this).inflate(R.layout.custom_snackbar, layout, false);
-        snackBarActionTurnOn = customSnackBarView.findViewById(R.id.action1);
-        snackBarActionContinue = customSnackBarView.findViewById(R.id.action2);
+        continueWithoutInternet = findViewById(R.id.continueWithoutInternet);
 
         layout = findViewById(R.id.splash);
 
@@ -75,9 +72,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         animator.start();
 
-        // Listeners for the SnackBar Action Buttons
-        snackBarActionTurnOn.setOnClickListener(view -> showInternetOptionsDialog(sharedPreferences));
-        snackBarActionContinue.setOnClickListener(view -> continueWithoutInternet(sharedPreferences));
+        continueWithoutInternet.setOnClickListener(view -> continueWithoutInternet(sharedPreferences));
 
         checkInternetConnection(sharedPreferences);
     }
@@ -89,7 +84,9 @@ public class SplashScreenActivity extends AppCompatActivity {
 
         if (!isConnected) {
             // Internet Connection Unavailable
-            SnackBarHelper.showShortCustomSnackBar(this, layout, "No Internet", "Turn On", "Continue");
+            continueWithoutInternet.setVisibility(View.VISIBLE);
+            Snackbar snackbar = Snackbar.make(this, layout, "No Internet", Snackbar.LENGTH_INDEFINITE).setAction("Turn On", view -> showInternetOptionsDialog(sharedPreferences));
+            snackbar.show();
         } else {
             // Internet Connection Available
             new Handler().postDelayed(() -> {
@@ -109,6 +106,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     private void showInternetOptionsDialog(SharedPreferences sharedPreferences) {
+        Log.d("debug", "Turn On is Clicked!");
         AlertDialog.Builder builder = new AlertDialog.Builder(SplashScreenActivity.this);
         builder.setTitle("Select Convenient Option");
         builder.setMessage("Please select an option to turn on internet");
@@ -127,6 +125,7 @@ public class SplashScreenActivity extends AppCompatActivity {
     }
 
     public void continueWithoutInternet(SharedPreferences sharedPreferences) {
+        Log.d("debug", "Continue is clicked!");
         String savedEmail = sharedPreferences.getString("email", null);
         String savedPassword = sharedPreferences.getString("password", null);
         boolean isStudent = sharedPreferences.getBoolean("isStudent", false);

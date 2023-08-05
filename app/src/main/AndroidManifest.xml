@@ -27,45 +27,59 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".students.activities.StudentPostActivity"
+            android:exported="false" />
+        <activity
+            android:name=".students.activities.StudentNotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".students.activities.StudentSearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".students.activities.StudentChatsActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
             android:name=".students.activities.StudentProfileActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".admins.activities.EditStudentProfilesActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".admins.activities.AddStudentActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".explorer.activities.ExplorerActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".students.activities.EditProfileActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".admins.activities.AdminActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".LoginActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".SplashScreenActivity"
             android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustPan"
-            android:exported="true">
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -74,16 +88,16 @@
         </activity>
         <activity
             android:name=".students.activities.StudentActivity"
-            android:windowSoftInputMode="adjustPan"
             android:configChanges="orientation|screenSize"
-            android:exported="true" />
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan" />
 
         <service
             android:name=".students.services.MyFirebaseMessagingService"
             android:exported="false"
             android:permission="TODO">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 

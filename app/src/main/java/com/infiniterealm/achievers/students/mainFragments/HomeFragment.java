@@ -14,15 +14,16 @@ import android.widget.ImageView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.infiniterealm.achievers.LoginActivity;
 import com.infiniterealm.achievers.R;
+import com.infiniterealm.achievers.students.activities.StudentChatsActivity;
+import com.infiniterealm.achievers.students.activities.StudentNotificationActivity;
+import com.infiniterealm.achievers.students.activities.StudentPostActivity;
+import com.infiniterealm.achievers.students.activities.StudentSearchActivity;
 import com.infiniterealm.achievers.utilities.Essentials;
 
 import java.util.ArrayList;
@@ -40,11 +41,9 @@ public class HomeFragment extends Fragment {
     SharedPreferences sharedPreferences;
     View rootView;
     FirebaseAuth mAuth;
-    ImageView search;
+    ImageView search, notifications, addPost, chats;
     DatabaseReference mDbRef, authRef;
-    ConstraintLayout homeLayout;
-    ImageView notifications;
-    ImageView addPost;
+    ConstraintLayout studentHomeLayout;
     private List<String> itemList = new ArrayList<>();
     private List<String> originalItemList = new ArrayList<>();
     private ArrayAdapter<String> adapter;
@@ -91,11 +90,18 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
-        homeLayout = rootView.findViewById(R.id.home_layout);
-        search = rootView.findViewById(R.id.search);
+        studentHomeLayout = rootView.findViewById(R.id.studentHomeLayout);
 
+        search = rootView.findViewById(R.id.search);
         notifications = rootView.findViewById(R.id.notifications);
         addPost = rootView.findViewById(R.id.addPost);
+        chats = rootView.findViewById(R.id.chats);
+
+        search.setColorFilter(Essentials.getColor(requireContext(), R.color.pink_900, R.color.pink_50));
+        notifications.setColorFilter(Essentials.getColor(requireContext(), R.color.pink_900, R.color.pink_50));
+        addPost.setColorFilter(Essentials.getColor(requireContext(), R.color.pink_900, R.color.pink_50));
+        chats.setColorFilter(Essentials.getColor(requireContext(), R.color.pink_900, R.color.pink_50));
+
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -110,9 +116,25 @@ public class HomeFragment extends Fragment {
         String device = Build.MANUFACTURER + " - " + Build.MODEL;
         authRef = FirebaseDatabase.getInstance().getReference("Auth").child(ID).child("Sessions").child(device);
 
-        notifications.setOnClickListener(view -> navigateToFragment(new NotificationsFragment()));
-        addPost.setOnClickListener(view -> navigateToFragment(new AddPostFragment()));
-        search.setOnClickListener(view -> navigateToFragment(new SearchFragment()));
+        notifications.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), StudentNotificationActivity.class);
+            startActivity(intent);
+        });
+
+        addPost.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), StudentPostActivity.class);
+            startActivity(intent);
+        });
+
+        chats.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), StudentChatsActivity.class);
+            startActivity(intent);
+        });
+
+        search.setOnClickListener(view -> {
+            Intent intent = new Intent(requireContext(), StudentSearchActivity.class);
+            startActivity(intent);
+        });
 
         rootView.findViewById(R.id.studentLogout).setOnClickListener(v -> {
             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -120,7 +142,6 @@ public class HomeFragment extends Fragment {
             editor.apply();
 
             authRef.child("lastLoggedOut").setValue(System.currentTimeMillis());
-            authRef.child("lastSeen").setValue(System.currentTimeMillis());
             authRef.child("isLoggedIn").setValue(false);
             //Your code
             mAuth.signOut();
@@ -131,12 +152,5 @@ public class HomeFragment extends Fragment {
         });
 
         return rootView;
-    }
-
-    private void navigateToFragment(Fragment fragment) {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame, fragment);
-        fragmentTransaction.commit();
     }
 }
