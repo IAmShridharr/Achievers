@@ -1,16 +1,16 @@
 package com.infiniterealm.achievers.admins.models;
 
 public class StudentListItemModel {
-    private String name, phone, profileImageUrl, id;
+    private String name, phone, profileImageURL, id;
 
     public StudentListItemModel() {
 
     }
 
-    public StudentListItemModel(String name, String phone, String profileImageUrl, String id) {
+    public StudentListItemModel(String name, String phone, String profileImageURL, String id) {
         this.name = name;
         this.phone = phone;
-        this.profileImageUrl = profileImageUrl;
+        this.profileImageURL = profileImageURL;
         this.id = id;
     }
 
@@ -30,11 +30,11 @@ public class StudentListItemModel {
         this.phone = phone;
     }
 
-    public String getProfileImageUrl() {
-        return profileImageUrl;
+    public String getProfileImageURL() {
+        return profileImageURL;
     }
 
-    public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
+    public void setProfileImageURL(String profileImageUrl) { this.profileImageURL = profileImageURL; }
 
     public String getId() {
         return id;

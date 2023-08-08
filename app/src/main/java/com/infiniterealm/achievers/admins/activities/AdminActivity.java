@@ -1,5 +1,6 @@
 package com.infiniterealm.achievers.admins.activities;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -47,6 +48,21 @@ public class AdminActivity extends AppCompatActivity {
             return true;
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Exit");
+        builder.setMessage("Are you sure you want to exit the app?");
+        builder.setPositiveButton("Yes", (dialog, which) -> {
+            // If user confirms exit, finish the activity
+            finishAffinity();
+        });
+        builder.setNegativeButton("No", null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     private void navigateToFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

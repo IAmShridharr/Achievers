@@ -97,8 +97,8 @@ public class SplashScreenActivity extends AppCompatActivity {
                 if (savedEmail != null && savedPassword != null) {
                     login(savedEmail, savedPassword);
                 } else {
-                    Intent intent = new Intent(SplashScreenActivity.this, LoginActivity.class);
-                    startActivity(intent);
+                    Intent loginActivity = new Intent(SplashScreenActivity.this, LoginActivity.class);
+                    startActivity(loginActivity);
                     finish();
                 }
             }, SPLASH_SCREEN_TIMEOUT);

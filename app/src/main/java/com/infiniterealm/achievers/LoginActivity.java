@@ -283,6 +283,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finishAffinity();
+    }
+
     private void showSnackBar(View view, String message) {
         Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
         snackbar.show();

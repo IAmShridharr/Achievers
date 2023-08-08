@@ -16,7 +16,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.google.android.material.snackbar.Snackbar;
 import com.infiniterealm.achievers.R;
 import com.infiniterealm.achievers.admins.activities.EditStudentProfilesActivity;
 import com.infiniterealm.achievers.admins.models.StudentListItemModel;
@@ -61,7 +60,7 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
             holder.studentRollNumber.setVisibility(View.GONE);
         }
 
-        Glide.with(holder.studentProfileImage.getContext()).load(model.getProfileImageUrl()).placeholder(R.drawable.profile_picture_placeholder).into(holder.studentProfileImage);
+        Glide.with(holder.studentProfileImage.getContext()).load(model.getProfileImageURL()).placeholder(R.drawable.profile_picture_placeholder).into(holder.studentProfileImage);
 
         holder.studentProfileImage.setOnClickListener(view -> {
             Dialog dialog = new Dialog(context, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
@@ -116,10 +115,5 @@ public class StudentsAdapter extends RecyclerView.Adapter<StudentsAdapter.Studen
             layout = itemView.findViewById(R.id.adminProfileLayout);
             details = itemView.findViewById(R.id.details);
         }
-    }
-
-    private void showSnackBar(View view, String message) {
-        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
-        snackbar.show();
     }
 }

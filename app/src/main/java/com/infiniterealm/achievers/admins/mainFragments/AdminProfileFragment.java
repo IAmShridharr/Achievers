@@ -25,6 +25,7 @@ import com.infiniterealm.achievers.admins.models.StudentListItemModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -123,7 +124,7 @@ public class AdminProfileFragment extends Fragment {
                     for (DataSnapshot studentSnapshot : standardSnapshot.getChildren()) {
                         // Loop through the profile information within each student
                         for (DataSnapshot profileSnapshot : studentSnapshot.getChildren()) {
-                            if (studentSnapshot.hasChild("Profile Information")) {
+                            if (Objects.equals(profileSnapshot.getKey(), "Profile Information")) {
                                 // Get the student object using the Student class
                                 StudentListItemModel student = profileSnapshot.getValue(StudentListItemModel.class);
                                 // Add the student to the list if it's not null
